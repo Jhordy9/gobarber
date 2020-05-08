@@ -1,7 +1,8 @@
 {
   "env": {
     "browser": true,
-    "es6": true
+    "es6": true,
+    "jest": true
   },
   "extends": [
     "plugin:react/recommended",
@@ -9,6 +10,13 @@
     "plugin:@typescript-eslint/recommended",
     "prettier/@typescript-eslint",
     "plugin:prettier/recommended"
+  ],
+  "indent": [
+    "error",
+    4,
+    {
+      "SwitchCase": 1
+    }
   ],
   "globals": {
     "Atomics": "readonly",

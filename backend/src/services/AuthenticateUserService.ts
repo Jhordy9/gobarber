@@ -36,18 +36,9 @@ class AuthenticateUserService {
     if (!passwordMatched) {
       throw new AppError('Incorrect email/password combination.', 401);
     }
-
-    /**
-     * Primeiro parâmetro ficara dentro do token, porém não seguro, utilzizar para
-     * informações que será utilizada no frontend de maneira mais direta
-     * Segundo parâmetro é uma chave secreta, md5.cz para gerar uma string única
-     * Terceiro parâmetro são várias configurações do token
-     */
     const { secret, expiresIn } = authConfig.jwt;
     const token = sign({}, secret, {
-      // Sempre será o id do usuário
       subject: user.id,
-      // Quando tempo irá durar a sessão logada do usuário
       expiresIn,
     });
 
