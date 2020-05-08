@@ -28,6 +28,12 @@
 
 Main project in progress during the [GoStack BootCamp](https://rocketseat.com.br/bootcamp), using the following technologies:
 
+<h3 align="center">Attention! Used TypeScript on all platforms.</h3>
+
+<h3>Text Editor</h3>
+
+-  [VSCode][vc] with [EditorConfig][vceditconfig] and [ESLint][vceslint]
+
 <h3>Backend</h3>
 
 -  [Node.js](https://nodejs.org/en/)
@@ -48,7 +54,6 @@ Main project in progress during the [GoStack BootCamp](https://rocketseat.com.br
 -  [styled-components](https://www.styled-components.com/)
 -  [React Navigation](https://reactnavigation.org/)
 -  [Android Studio](https://developer.android.com/studio)
--  [VSCode][vc] with [EditorConfig][vceditconfig] and [ESLint][vceslint]
   
 
 ## :memo: License
