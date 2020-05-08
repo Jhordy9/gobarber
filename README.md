@@ -33,9 +33,12 @@ Main project in progress during the [GoStack BootCamp](https://rocketseat.com.br
 -  [Docker](https://www.docker.com/)
 -  [TypeORM](https://typeorm.io/)
 -  [PostegreSQL](https://www.postgresql.org/)
+-  [styled-components](https://www.styled-components.com/)
 -  [ReactJS](https://reactjs.org/)
 -  [React Router](https://github.com/ReactTraining/react-router)
--  [styled-components](https://www.styled-components.com/)
+-  [React Native](https://reactnative.dev/)
+-  [React Navigation](https://reactnavigation.org/)
+-  [Android Studio](https://developer.android.com/studio)
 -  [VSCode][vc] with [EditorConfig][vceditconfig] and [ESLint][vceslint]
   
 
