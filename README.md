@@ -28,7 +28,7 @@
 
 Main project in progress during the [GoStack BootCamp](https://rocketseat.com.br/bootcamp), using the following technologies:
 
-<h3 align="center">Attention! Used TypeScript on all platforms.</h3>
+<p>Attention! TypeScript is used on all platforms.</p>
 
 <h3>Text Editor</h3>
 
