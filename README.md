@@ -28,13 +28,13 @@
 
 Main project in progress during the [GoStack BootCamp](https://rocketseat.com.br/bootcamp), using the following technologies:
 
-<p>Attention! TypeScript is used on all platforms.</p>
+<p><b>Attention</b>❗ TypeScript is used on all platforms. 🚀</p>
 
-<h3>Text Editor</h3>
+<h3>Text Editor 👨‍💻</h3>
 
 -  [VSCode][vc] with [EditorConfig][vceditconfig] and [ESLint][vceslint]
 
-<h3>Backend</h3>
+<h3>Backend 💾</h3>
 
 -  [Node.js](https://nodejs.org/en/)
 -  [ExpressJS](https://expressjs.com/)
@@ -42,14 +42,14 @@ Main project in progress during the [GoStack BootCamp](https://rocketseat.com.br
 -  [TypeORM](https://typeorm.io/)
 -  [PostegreSQL](https://www.postgresql.org/)
 
-<h3>Web</h3>
+<h3>Web 📺</h3>
 
 -  [styled-components](https://www.styled-components.com/)
 -  [ReactJS](https://reactjs.org/)
 -  [React Router](https://github.com/ReactTraining/react-router)
 -  [React Native](https://reactnative.dev/)
 
-<h3>Mobile</h3>
+<h3>Mobile 📱</h3>
 
 -  [styled-components](https://www.styled-components.com/)
 -  [React Navigation](https://reactnavigation.org/)
