@@ -47,11 +47,11 @@ Main project in progress during the [GoStack BootCamp](https://rocketseat.com.br
 -  [styled-components](https://www.styled-components.com/)
 -  [ReactJS](https://reactjs.org/)
 -  [React Router](https://github.com/ReactTraining/react-router)
--  [React Native](https://reactnative.dev/)
 
 <h3>Mobile 📱</h3>
 
 -  [styled-components](https://www.styled-components.com/)
+-  [React Native](https://reactnative.dev/)
 -  [React Navigation](https://reactnavigation.org/)
 -  [Android Studio](https://developer.android.com/studio)
   
