@@ -40,7 +40,7 @@ Main project in progress during the [GoStack BootCamp](https://rocketseat.com.br
 -  [ExpressJS](https://expressjs.com/)
 -  [Docker](https://www.docker.com/)
 -  [TypeORM](https://typeorm.io/)
--  [PostegreSQL](https://www.postgresql.org/)
+-  [PostgreSQL](https://www.postgresql.org/)
 
 <h3>Web 📺</h3>
 
