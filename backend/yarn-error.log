@@ -1,8 +1,8 @@
 Arguments: 
-  /home/jhordy/.nvm/versions/node/v13.12.0/bin/node /home/jhordy/.yarn/bin/yarn.js add express-async-errors~
+  /home/jhordy/.nvm/versions/node/v13.12.0/bin/node /home/jhordy/.yarn/bin/yarn.js add tsyring
 
 PATH: 
-  /home/jhordy/.yarn/bin:/home/jhordy/.config/yarn/global/node_modules/.bin:/home/jhordy/.nvm/versions/node/v13.12.0/bin:/home/jhordy/.yarn/bin:/home/jhordy/.config/yarn/global/node_modules/.bin:/home/jhordy/.zinit/polaris/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin
+  /home/jhordy/.yarn/bin:/home/jhordy/.config/yarn/global/node_modules/.bin:/home/jhordy/.nvm/versions/node/v13.12.0/bin:/home/jhordy/.yarn/bin:/home/jhordy/.config/yarn/global/node_modules/.bin:/home/jhordy/.zinit/polaris/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/home/jhordy/Android/Sdk/emulator:/home/jhordy/Android/Sdk/tools:/home/jhordy/Android/Sdk/tools/bin:/home/jhordy/Android/Sdk/platform-tools:/home/jhordy/android-studio/bin:/home/jhordy/Android/Sdk/emulator:/home/jhordy/Android/Sdk/tools:/home/jhordy/Android/Sdk/tools/bin:/home/jhordy/Android/Sdk/platform-tools:/home/jhordy/android-studio/bin
 
 Yarn version: 
   1.22.4
@@ -14,7 +14,7 @@ Platform:
   linux x64
 
 Trace: 
-  Error: https://registry.yarnpkg.com/express-async-errors~: Not found
+  Error: https://registry.yarnpkg.com/tsyring: Not found
       at Request.params.callback [as _callback] (/home/jhordy/.yarn/lib/cli.js:66987:18)
       at Request.self.callback (/home/jhordy/.yarn/lib/cli.js:140748:22)
       at Request.emit (events.js:315:20)
@@ -34,14 +34,17 @@ npm manifest:
     "license": "MIT",
     "scripts": {
       "build": "tsc",
-      "dev:server": "ts-node-dev --transpileOnly --ignore-watch node_modules src/server.ts",
-      "typeorm": "ts-node-dev ./node_modules/typeorm/cli.js"
+      "dev:server": "ts-node-dev -r tsconfig-paths/register --transpileOnly --ignore-watch node_modules src/shared/infra/http/server.ts",
+      "start": "ts-node src/shared/infra/http/server.ts",
+      "typeorm": "ts-node-dev -r tsconfig-paths/register ./node_modules/typeorm/cli.js"
     },
     "dependencies": {
       "@types/jsonwebtoken": "^8.3.9",
       "bcryptjs": "^2.4.3",
+      "cors": "^2.8.5",
       "date-fns": "^2.12.0",
       "express": "^4.17.1",
+      "express-async-errors": "^3.1.1",
       "jsonwebtoken": "^8.5.1",
       "multer": "^1.4.2",
       "pg": "^8.0.2",
@@ -51,6 +54,7 @@ npm manifest:
     },
     "devDependencies": {
       "@types/bcryptjs": "^2.4.2",
+      "@types/cors": "^2.8.6",
       "@types/express": "^4.17.6",
       "@types/multer": "^1.4.3",
       "@typescript-eslint/eslint-plugin": "^2.28.0",
@@ -63,6 +67,7 @@ npm manifest:
       "eslint-plugin-prettier": "^3.1.3",
       "prettier": "^2.0.4",
       "ts-node-dev": "^1.0.0-pre.44",
+      "tsconfig-paths": "^3.9.0",
       "typescript": "^3.8.3"
     }
   }
@@ -120,6 +125,13 @@ Lockfile:
     integrity sha512-2+FrkXY4zllzTNfJth7jOqEHC+enpLeGslEhpnTAkg21GkRrWV4SsAtqchtT4YS9/nODBU2/ZfsBY2X4J/dX7A==
     dependencies:
       "@types/node" "*"
+  
+  "@types/cors@^2.8.6":
+    version "2.8.6"
+    resolved "https://registry.yarnpkg.com/@types/cors/-/cors-2.8.6.tgz#cfaab33c49c15b1ded32f235111ce9123009bd02"
+    integrity sha512-invOmosX0DqbpA+cE2yoHGUlF/blyf7nB0OGYBBiH27crcVm5NmFaZkLP4Ta1hGaesckCi5lVLlydNJCxkTOSg==
+    dependencies:
+      "@types/express" "*"
   
   "@types/eslint-visitor-keys@^1.0.0":
     version "1.0.0"
@@ -627,6 +639,14 @@ Lockfile:
     resolved "https://registry.yarnpkg.com/core-util-is/-/core-util-is-1.0.2.tgz#b5fd54220aa2bc5ab57aab7140c940754503c1a7"
     integrity sha1-tf1UIgqivFq1eqtxQMlAdUUDwac=
   
+  cors@^2.8.5:
+    version "2.8.5"
+    resolved "https://registry.yarnpkg.com/cors/-/cors-2.8.5.tgz#eac11da51592dd86b9f06f6e7ac293b3df875d29"
+    integrity sha512-KIHbLJqu73RGr/hnbrO9uBeixNGuvSQjul/jdFvS/KFSIH1hWVd1ng7zOHx+YrEfInLG7q4n6GHQ9cDtxv/P6g==
+    dependencies:
+      object-assign "^4"
+      vary "^1"
+  
   cross-spawn@^6.0.5:
     version "6.0.5"
     resolved "https://registry.yarnpkg.com/cross-spawn/-/cross-spawn-6.0.5.tgz#4a5ec7c64dfae22c3a14124dbacdee846d80cbc4"
@@ -999,6 +1019,11 @@ Lockfile:
     version "1.8.1"
     resolved "https://registry.yarnpkg.com/etag/-/etag-1.8.1.tgz#41ae2eeb65efa62268aebfea83ac7d79299b0887"
     integrity sha1-Qa4u62XvpiJorr/qg6x9eSmbCIc=
+  
+  express-async-errors@^3.1.1:
+    version "3.1.1"
+    resolved "https://registry.yarnpkg.com/express-async-errors/-/express-async-errors-3.1.1.tgz#6053236d61d21ddef4892d6bd1d736889fc9da41"
+    integrity sha512-h6aK1da4tpqWSbyCa3FxB/V6Ehd4EEB15zyQq9qe75OZBp0krinNKuH4rAY+S/U/2I36vdLAUFSjQJ+TFmODng==
   
   express@^4.17.1:
     version "4.17.1"
@@ -1789,7 +1814,7 @@ Lockfile:
       semver "2 || 3 || 4 || 5"
       validate-npm-package-license "^3.0.1"
   
-  object-assign@^4.0.1, object-assign@^4.1.1:
+  object-assign@^4, object-assign@^4.0.1, object-assign@^4.1.1:
     version "4.1.1"
     resolved "https://registry.yarnpkg.com/object-assign/-/object-assign-4.1.1.tgz#2109adc7965887cfc05cbbd442cac8bfbb360863"
     integrity sha1-IQmtx5ZYh8/AXLvUQsrIv7s2CGM=
@@ -2849,7 +2874,7 @@ Lockfile:
       spdx-correct "^3.0.0"
       spdx-expression-parse "^3.0.0"
   
-  vary@~1.1.2:
+  vary@^1, vary@~1.1.2:
     version "1.1.2"
     resolved "https://registry.yarnpkg.com/vary/-/vary-1.1.2.tgz#2299f02c6ded30d4a5961b0b9f74524a18f634fc"
     integrity sha1-IpnwLG3tMNSllhsLn3RSShj2NPw=
