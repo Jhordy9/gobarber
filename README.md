@@ -28,15 +28,32 @@
 
 Main project in progress during the [GoStack BootCamp](https://rocketseat.com.br/bootcamp), using the following technologies:
 
+<p><b>Attention!</b> TypeScript is used on all platforms.</p>
+
+<h3>Text Editor 👨‍💻</h3>
+
+-  [VSCode][vc] with [EditorConfig][vceditconfig] and [ESLint][vceslint]
+
+<h3>Backend 💾</h3>
+
 -  [Node.js](https://nodejs.org/en/)
 -  [ExpressJS](https://expressjs.com/)
 -  [Docker](https://www.docker.com/)
 -  [TypeORM](https://typeorm.io/)
--  [PostegreSQL](https://www.postgresql.org/)
+-  [PostgreSQL](https://www.postgresql.org/)
+
+<h3>Web 📺</h3>
+
+-  [styled-components](https://www.styled-components.com/)
 -  [ReactJS](https://reactjs.org/)
 -  [React Router](https://github.com/ReactTraining/react-router)
+
+<h3>Mobile 📱</h3>
+
 -  [styled-components](https://www.styled-components.com/)
--  [VSCode][vc] with [EditorConfig][vceditconfig] and [ESLint][vceslint]
+-  [React Native](https://reactnative.dev/)
+-  [React Navigation](https://reactnavigation.org/)
+-  [Android Studio](https://developer.android.com/studio)
   
 
 ## :memo: License
