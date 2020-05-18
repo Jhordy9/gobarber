@@ -3,7 +3,7 @@ import { verify } from 'jsonwebtoken';
 import authConfig from '@config/auth';
 import AppError from '@shared/errors/AppError';
 
-interface TokenPayLoad {
+interface ITokenPayLoad {
   iat: number;
   exp: number;
   sub: string;
@@ -30,7 +30,7 @@ export default function ensureAuthenticated(
 
     // O decoded indica que possui dois formatos
     // Utilizando o as é possível forçar um formato
-    const { sub } = decoded as TokenPayLoad;
+    const { sub } = decoded as ITokenPayLoad;
 
     // Agora utilizando um request.user em quaalquer rota é possível saber qual
     // É a id do usuário que ta solicitando alguma requisição
