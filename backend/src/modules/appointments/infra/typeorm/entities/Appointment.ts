@@ -10,12 +10,6 @@ import {
 
 import User from '@modules/users/infra/typeorm/entities/User';
 
-/**
- * Um para um (OneToOne)
- * Um para muitos (OneToMany)
- * Muitos para muitos (ManyToMany)
- */
-
 @Entity('appointments')
 class Appointment {
   @PrimaryGeneratedColumn('uuid')
@@ -24,10 +18,16 @@ class Appointment {
   @Column()
   provider_id: string;
 
-  // Criando o relacionamento entre provider com o id do User.
   @ManyToOne(() => User)
   @JoinColumn({ name: 'provider_id' })
   provider: User;
+
+  @Column()
+  user_id: string;
+
+  @ManyToOne(() => User)
+  @JoinColumn({ name: 'user_id' })
+  user: User;
 
   @Column('timestamp with time zone')
   date: Date;
