@@ -8,7 +8,6 @@
   Make appointments with the best barbers!
 </h4>
 <p align="center">
-  <img alt="GitHub top language" src="https://img.shields.io/github/languages/top/jhordy9/gobarber">
   
   <img alt="GitHub language count" src="https://img.shields.io/github/languages/count/jhordy9/gobarber">
   
