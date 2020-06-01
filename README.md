@@ -37,9 +37,12 @@ Main project in progress during the [GoStack BootCamp](https://rocketseat.com.br
 
 -  [Node.js](https://nodejs.org/en/)
 -  [ExpressJS](https://expressjs.com/)
+-  [Jest](https://jestjs.io/)
 -  [Docker](https://www.docker.com/)
 -  [TypeORM](https://typeorm.io/)
 -  [PostgreSQL](https://www.postgresql.org/)
+-  [MongoDB](https://www.mongodb.com/)
+-  [Redis](https://redis.io/)
 
 <h3>Web 📺</h3>
 
