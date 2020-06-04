@@ -11,13 +11,6 @@
     "prettier/@typescript-eslint",
     "plugin:prettier/recommended"
   ],
-  "indent": [
-    "error",
-    4,
-    {
-      "SwitchCase": 1
-    }
-  ],
   "globals": {
     "Atomics": "readonly",
     "SharedArrayBuffer": "readonly"
@@ -53,6 +46,8 @@
       }
     ],
     "import/prefer-default-export": "off",
+    "import/no-duplicates": "off",
+    "@typescript-eslint/camelcase": "off",
     "@typescript-eslint/explicit-function-return-type": [
       "error",
       {
