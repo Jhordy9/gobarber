@@ -11,7 +11,7 @@ import {
   UserAvatar,
 } from './styles';
 
-const Dashboard: React.FC = () => {
+const Profile: React.FC = () => {
   const { signOut, user } = useAuth();
   const { navigate } = useNavigation();
 
@@ -35,4 +35,4 @@ const Dashboard: React.FC = () => {
   );
 };
 
-export default Dashboard;
+export default Profile;
