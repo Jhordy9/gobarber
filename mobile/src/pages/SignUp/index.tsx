@@ -63,8 +63,6 @@ const SignUp: React.FC = () => {
 
         await api.post('/users', data);
 
-        console.log(data);
-
         Alert.alert(
           'Cadastro realizado com sucesso',
           'Você já pode fazer login na aplicação',
@@ -104,7 +102,7 @@ const SignUp: React.FC = () => {
             <Image source={logoImg} />
 
             <View>
-              <Title>Faça seu logon</Title>
+              <Title>Crie sua conta</Title>
             </View>
 
             <Form ref={formRef} onSubmit={handleSignUp}>
