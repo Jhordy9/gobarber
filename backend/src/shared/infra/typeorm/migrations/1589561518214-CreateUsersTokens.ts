@@ -25,6 +25,10 @@ export default class CreateUsersTokens1589561518214
             type: 'uuid',
           },
           {
+            name: 'category',
+            type: 'varchar',
+          },
+          {
             name: 'create_at',
             type: 'timestamp',
             default: 'now()',

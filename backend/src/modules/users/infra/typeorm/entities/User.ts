@@ -25,6 +25,9 @@ class User {
   password: string;
 
   @Column()
+  category: 'client' | 'provider';
+
+  @Column()
   avatar: string;
 
   @CreateDateColumn()

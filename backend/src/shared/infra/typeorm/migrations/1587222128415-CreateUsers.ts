@@ -27,6 +27,10 @@ export default class CreateUsers1587222128415 implements MigrationInterface {
             type: 'varchar',
           },
           {
+            name: 'category',
+            type: 'varchar',
+          },
+          {
             name: 'create_at',
             type: 'timestamp',
             default: 'now()',

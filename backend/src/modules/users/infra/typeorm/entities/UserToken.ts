@@ -19,6 +19,9 @@ class UserToken {
   @Column()
   user_id: string;
 
+  @Column()
+  category: 'client' | 'provider';
+
   @CreateDateColumn()
   create_at: Date;
 

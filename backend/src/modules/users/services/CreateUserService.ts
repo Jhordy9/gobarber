@@ -10,6 +10,7 @@ interface IRequest {
   name: string;
   email: string;
   password: string;
+  category: 'client' | 'provider';
 }
 
 @injectable()
@@ -27,7 +28,7 @@ class CreateUserService {
     /** */
   }
 
-  async execute({ name, email, password }: IRequest): Promise<User> {
+  async execute({ name, email, password, category }: IRequest): Promise<User> {
     const checkUserEmailExists = await this.usersRepository.findByEmail(email);
 
     if (checkUserEmailExists) {
@@ -40,6 +41,7 @@ class CreateUserService {
       name,
       email,
       password: hashedPassword,
+      category,
     });
 
     await this.cashProvider.invalidatePrefix('provider-list');

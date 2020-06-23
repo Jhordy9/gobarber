@@ -23,18 +23,21 @@ describe('ListProviders', () => {
       name: 'John Doe',
       email: 'johndoe@example.com',
       password: '123456',
+      category: 'provider',
     });
 
     const user2 = await fakeUsersRepository.create({
       name: 'John Trê',
       email: 'johntre@example.com',
       password: '123456',
+      category: 'provider',
     });
 
     const loggedUser = await fakeUsersRepository.create({
       name: 'John Qua',
       email: 'johnqua@example.com',
       password: '123456',
+      category: 'provider',
     });
 
     const providers = await listProviders.execute({
