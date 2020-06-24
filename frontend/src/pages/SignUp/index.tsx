@@ -30,6 +30,7 @@ const SignUp: React.FC = () => {
   const formRef = useRef<FormHandles>(null);
   const { addToast } = useToast();
   const history = useHistory();
+  const [selectIsFilled, setSelectIsFilled] = useState(false);
 
   const handleSubmit = useCallback(
     async (data: SignUpFormData) => {
@@ -77,6 +78,10 @@ const SignUp: React.FC = () => {
     [addToast, history],
   );
 
+  const handleSelectChange = useCallback(() => {
+    setSelectIsFilled(true);
+  }, []);
+
   return (
     <Container>
       <Background />
@@ -97,6 +102,8 @@ const SignUp: React.FC = () => {
                 { label: 'Cliente', value: 1 },
                 { label: 'Barbeiro', value: 2 },
               ]}
+              onChange={handleSelectChange}
+              isFilled={selectIsFilled}
             />
 
             <Input

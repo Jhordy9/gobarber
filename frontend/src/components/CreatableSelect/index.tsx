@@ -3,7 +3,6 @@ import { OptionTypeBase } from 'react-select';
 import ReactSelect, { Props as CreatableProps } from 'react-select/creatable';
 import { IconBaseProps } from 'react-icons/lib';
 import { useField } from '@unform/core';
-import { Form } from '@unform/web';
 
 import { Container } from './style';
 
@@ -11,17 +10,18 @@ interface SelectProps extends CreatableProps<OptionTypeBase> {
   name: string;
   containerStyle?: object;
   icon?: React.ComponentType<IconBaseProps>;
+  isFilled: boolean;
 }
 
 const Select: React.FC<SelectProps> = ({
   name,
   containerStyle = {},
   icon: Icon,
+  isFilled,
   ...rest
 }) => {
   const selectRef = useRef(null);
   const [isFocused, setIsFocused] = useState(false);
-  const [isFilled, setIsFilled] = useState(false);
 
   const { fieldName, registerField } = useField(name);
 
@@ -30,9 +30,7 @@ const Select: React.FC<SelectProps> = ({
   }, []);
 
   const handleInputBlur = useCallback(() => {
-    setIsFilled(true);
-
-    setIsFilled(!!selectRef.current);
+    setIsFocused(false);
   }, []);
 
   useEffect(() => {
@@ -58,29 +56,23 @@ const Select: React.FC<SelectProps> = ({
     <Container style={containerStyle} isFilled={isFilled} isFocused={isFocused}>
       {Icon && <Icon size={20} />}
 
-      <Form
-        onSubmit={() => {
-          /** */
-        }}
+      <ReactSelect
+        onFocus={handleInputFocus}
+        onBlur={handleInputBlur}
+        classNamePrefix="react-select"
+        isSearchable={false}
         ref={selectRef}
-      >
-        <ReactSelect
-          onFocus={handleInputFocus}
-          onBlur={handleInputBlur}
-          classNamePrefix="react-select"
-          isSearchable={false}
-          theme={(theme) => ({
-            ...theme,
-            borderRadius: 4,
-            colors: {
-              ...theme.colors,
-              primary25: 'neutral10',
-              primary: 'neutral10',
-            },
-          })}
-          {...rest}
-        />
-      </Form>
+        theme={(theme) => ({
+          ...theme,
+          borderRadius: 4,
+          colors: {
+            ...theme.colors,
+            primary25: 'neutral10',
+            primary: 'neutral10',
+          },
+        })}
+        {...rest}
+      />
     </Container>
   );
 };
