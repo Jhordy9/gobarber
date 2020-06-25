@@ -10,18 +10,17 @@ interface SelectProps extends CreatableProps<OptionTypeBase> {
   name: string;
   containerStyle?: object;
   icon?: React.ComponentType<IconBaseProps>;
-  isFilled: boolean;
 }
 
 const Select: React.FC<SelectProps> = ({
   name,
   containerStyle = {},
   icon: Icon,
-  isFilled,
   ...rest
 }) => {
-  const selectRef = useRef(null);
+  const selectRef = useRef<any>(null);
   const [isFocused, setIsFocused] = useState(false);
+  const [isFilled, setIsFilled] = useState(false);
 
   const { fieldName, registerField } = useField(name);
 
@@ -31,6 +30,12 @@ const Select: React.FC<SelectProps> = ({
 
   const handleInputBlur = useCallback(() => {
     setIsFocused(false);
+
+    try {
+      setIsFilled(!!selectRef.current?.state.value.value);
+    } catch {
+      setIsFilled(false);
+    }
   }, []);
 
   useEffect(() => {
