@@ -25,7 +25,7 @@ class User {
   password: string;
 
   @Column()
-  category: 'client' | 'provider';
+  category: string;
 
   @Column()
   avatar: string;

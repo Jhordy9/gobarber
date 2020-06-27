@@ -1,4 +1,4 @@
-import React, { useCallback, useRef, useState, useMemo } from 'react';
+import React, { useCallback, useRef } from 'react';
 import { FiArrowLeft, FiMail, FiLock, FiUser, FiInfo } from 'react-icons/fi';
 import { FormHandles } from '@unform/core';
 import { Form } from '@unform/web';
@@ -9,16 +9,16 @@ import api from '../../services/api';
 import logoImg from '../../assets/logo.svg';
 
 import Input from '../../components/Input';
-import Select from '../../components/CreatableSelect';
+import Select from '../../components/Select';
 import Button from '../../components/Button';
 import { useToast } from '../../hooks/toast';
 import { Container, Content, Background, AnimationContainer } from './styles';
 
 interface SignUpFormData {
-  nome: string;
+  name: string;
   email: string;
   password: string;
-  category: 'client' | 'provider';
+  category: OptionsDTO;
 }
 
 interface OptionsDTO {
@@ -94,8 +94,8 @@ const SignUp: React.FC = () => {
               icon={FiInfo}
               placeholder="Usuário"
               options={[
-                { label: 'Cliente', value: 1 },
-                { label: 'Barbeiro', value: 2 },
+                { label: 'Cliente', value: 'Cliente' },
+                { label: 'Barbeiro', value: 'Barbeiro' },
               ]}
             />
 

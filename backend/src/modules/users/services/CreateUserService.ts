@@ -10,7 +10,7 @@ interface IRequest {
   name: string;
   email: string;
   password: string;
-  category: 'client' | 'provider';
+  category: string;
 }
 
 @injectable()

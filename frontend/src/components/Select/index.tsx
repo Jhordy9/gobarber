@@ -4,7 +4,8 @@ import ReactSelect, { Props as CreatableProps } from 'react-select/creatable';
 import { IconBaseProps } from 'react-icons/lib';
 import { useField } from '@unform/core';
 
-import { Container } from './style';
+import { FiAlertCircle } from 'react-icons/fi';
+import { Container, Error } from './style';
 
 interface SelectProps extends CreatableProps<OptionTypeBase> {
   name: string;
@@ -22,7 +23,7 @@ const Select: React.FC<SelectProps> = ({
   const [isFocused, setIsFocused] = useState(false);
   const [isFilled, setIsFilled] = useState(false);
 
-  const { fieldName, registerField } = useField(name);
+  const { fieldName, error, registerField, defaultValue } = useField(name);
 
   const handleInputFocus = useCallback(() => {
     setIsFocused(true);
@@ -58,15 +59,21 @@ const Select: React.FC<SelectProps> = ({
   }, [fieldName, registerField, rest.isMulti]);
 
   return (
-    <Container style={containerStyle} isFilled={isFilled} isFocused={isFocused}>
+    <Container
+      style={containerStyle}
+      isFilled={isFilled}
+      isFocused={isFocused}
+      isErrored={!!error}
+    >
       {Icon && <Icon size={20} />}
 
       <ReactSelect
         onFocus={handleInputFocus}
         onBlur={handleInputBlur}
+        defaultValue={defaultValue}
         classNamePrefix="react-select"
-        isSearchable={false}
         ref={selectRef}
+        isSearchable={false}
         theme={(theme) => ({
           ...theme,
           borderRadius: 4,
@@ -78,6 +85,11 @@ const Select: React.FC<SelectProps> = ({
         })}
         {...rest}
       />
+      {error && (
+        <Error title={error}>
+          <FiAlertCircle color="#c53030" size={20} />
+        </Error>
+      )}
     </Container>
   );
 };

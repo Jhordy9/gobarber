@@ -17,7 +17,7 @@ describe('showProfile', () => {
       name: 'John Doe',
       email: 'johndoe@example.com',
       password: '123456',
-      category: 'provider',
+      category: 'barbeiro',
     });
 
     const profile = await showProfile.execute({
