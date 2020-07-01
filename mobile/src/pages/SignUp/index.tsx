@@ -15,6 +15,7 @@ import { Form } from '@unform/mobile';
 import { FormHandles } from '@unform/core';
 import { useNavigation } from '@react-navigation/native';
 import Input from '../../components/Input';
+import Select from '../../components/Select';
 import Button from '../../components/Button';
 import logoImg from '../../assets/logo.png';
 import getValidationErrors from '../../utils/getValidationErrors';
@@ -30,6 +31,7 @@ interface SignUpFormData {
 const SignUp: React.FC = () => {
   const formRef = useRef<FormHandles>(null);
   const [keyboard, setKeyboard] = useState(false);
+
   const navigation = useNavigation();
 
   const emailInputRef = useRef<TextInput>(null);
@@ -116,6 +118,13 @@ const SignUp: React.FC = () => {
                   emailInputRef.current?.focus();
                 }}
               />
+              <Select
+                name="usuario"
+                options={[
+                  { label: 'Cliente', value: 'Cliente' },
+                  { label: 'Barbeiro', value: 'Barbeiro' },
+                ]}
+              />
               <Input
                 ref={emailInputRef}
                 keyboardType="email-address"
@@ -129,6 +138,7 @@ const SignUp: React.FC = () => {
                   passwordInputRef.current?.focus();
                 }}
               />
+
               <Input
                 ref={passwordInputRef}
                 secureTextEntry
