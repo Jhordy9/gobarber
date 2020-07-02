@@ -15,7 +15,7 @@ import { Form } from '@unform/mobile';
 import { FormHandles } from '@unform/core';
 import { useNavigation } from '@react-navigation/native';
 import Input from '../../components/Input';
-import Select from '../../components/Select';
+import SelectSwitch from '../../components/SelectSwitch';
 import Button from '../../components/Button';
 import logoImg from '../../assets/logo.png';
 import getValidationErrors from '../../utils/getValidationErrors';
@@ -26,6 +26,7 @@ interface SignUpFormData {
   name: string;
   email: string;
   password: string;
+  category: string;
 }
 
 const SignUp: React.FC = () => {
@@ -34,6 +35,7 @@ const SignUp: React.FC = () => {
 
   const navigation = useNavigation();
 
+  const userInputRef = useRef<TextInput>(null);
   const emailInputRef = useRef<TextInput>(null);
   const passwordInputRef = useRef<TextInput>(null);
 
@@ -56,6 +58,7 @@ const SignUp: React.FC = () => {
           email: Yup.string()
             .required('E-mail obrigatório')
             .email('Digite um e-mail válido'),
+          category: Yup.string().required(),
           password: Yup.string().min(6, 'No mínimo 6 dígitos'),
         });
 
@@ -118,12 +121,16 @@ const SignUp: React.FC = () => {
                   emailInputRef.current?.focus();
                 }}
               />
-              <Select
-                name="usuario"
+              <SelectSwitch
+                style={{ marginBottom: 8 }}
+                name="category"
                 options={[
                   { label: 'Cliente', value: 'Cliente' },
                   { label: 'Barbeiro', value: 'Barbeiro' },
                 ]}
+                onSubmitEditing={() => {
+                  userInputRef.current?.focus();
+                }}
               />
               <Input
                 ref={emailInputRef}
