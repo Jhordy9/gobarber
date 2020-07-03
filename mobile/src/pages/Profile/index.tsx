@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useRef, useCallback } from 'react';
 import {
   View,
   ScrollView,
@@ -23,6 +23,8 @@ import {
   BackButton,
   UserAvatarButton,
   UserAvatar,
+  SignOutButton,
+  ContainerButtonTop,
 } from './styles';
 import api from '../../services/api';
 import { useAuth } from '../../hooks/auth';
@@ -36,7 +38,7 @@ interface ProfileFormData {
 }
 
 const Profile: React.FC = () => {
-  const { user, updateUser } = useAuth();
+  const { user, updateUser, signOut } = useAuth();
 
   const formRef = useRef<FormHandles>(null);
   const navigation = useNavigation();
@@ -45,7 +47,6 @@ const Profile: React.FC = () => {
   const oldPasswordInputRef = useRef<TextInput>(null);
   const passwordInputRef = useRef<TextInput>(null);
   const confirmPasswordInputRef = useRef<TextInput>(null);
-
 
   const handleSignUp = useCallback(
     async (data: ProfileFormData) => {
@@ -129,7 +130,7 @@ const Profile: React.FC = () => {
         takePhotoButtonTitle: 'Usar câmera',
         chooseFromLibraryButtonTitle: 'Escolher da galeria',
       },
-      response => {
+      (response) => {
         if (response.didCancel) {
           return;
         }
@@ -147,12 +148,12 @@ const Profile: React.FC = () => {
           uri: response.uri,
         });
 
-        api.patch('users/avatar', data).then(apiResponse => {
+        api.patch('users/avatar', data).then((apiResponse) => {
           updateUser(apiResponse.data);
         });
       },
-    )
-  }, [updateUser, user.id])
+    );
+  }, [updateUser, user.id]);
 
   const handleGoBack = useCallback(() => {
     navigation.goBack();
@@ -170,14 +171,18 @@ const Profile: React.FC = () => {
           contentContainerStyle={{ flex: 1 }}
         >
           <Container>
-            <BackButton onPress={handleGoBack}>
-              <Icon name="chevron-left" size={24} color="#999591" />
-            </BackButton>
+            <ContainerButtonTop>
+              <BackButton onPress={handleGoBack}>
+                <Icon name="chevron-left" size={24} color="#999591" />
+              </BackButton>
+              <SignOutButton onPress={signOut}>
+                <Icon name="power" size={24} color="#999591" />
+              </SignOutButton>
+            </ContainerButtonTop>
 
             <UserAvatarButton onPress={handleUpdateAvatar}>
               <UserAvatar source={{ uri: user.avatar_url }} />
             </UserAvatarButton>
-
             <View>
               <Title>Meu perfil</Title>
             </View>

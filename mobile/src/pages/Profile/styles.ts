@@ -17,7 +17,17 @@ export const Title = styled.Text`
   margin: 24px 0;
 `;
 
+export const ContainerButtonTop = styled.View`
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+`;
+
 export const BackButton = styled.TouchableOpacity`
+  margin-top: 32px;
+`;
+
+export const SignOutButton = styled.TouchableOpacity`
   margin-top: 32px;
 `;
 
