@@ -23,4 +23,6 @@ appointmentsRouter.post(
 );
 appointmentsRouter.get('/me', providerAppointments.index);
 
+appointmentsRouter.get('/info', providerAppointments.show);
+
 export default appointmentsRouter;
