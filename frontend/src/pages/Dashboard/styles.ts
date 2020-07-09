@@ -267,3 +267,10 @@ export const Calendar = styled.aside`
     color: #232129 !important;
   }
 `;
+
+export const ContentCharts = styled.div`
+  max-width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+`;

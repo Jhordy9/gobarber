@@ -6,6 +6,8 @@ import 'react-day-picker/lib/style.css';
 
 import { FiPower, FiClock } from 'react-icons/fi';
 import { Link } from 'react-router-dom';
+import Charts from '../../components/Charts';
+
 import {
   Container,
   Header,
@@ -17,6 +19,7 @@ import {
   Section,
   Appointment,
   Calendar,
+  ContentCharts,
 } from './styles';
 import logoImg from '../../assets/logo.svg';
 import { useAuth } from '../../hooks/auth';
@@ -260,6 +263,11 @@ const Dashboard: React.FC = () => {
           />
         </Calendar>
       </Content>
+      {user.category === 'Barbeiro' && (
+        <ContentCharts>
+          <Charts />
+        </ContentCharts>
+      )}
     </Container>
   );
 };
