@@ -1,10 +1,14 @@
 import React, { useEffect, useState } from 'react';
 
 import { Line } from 'react-chartjs-2';
-import { format, parseISO, sub } from 'date-fns';
+import { format, parseISO } from 'date-fns';
 import { Container } from './styles';
 
 import api from '../../services/api';
+import {
+  ActualMonthsValues,
+  LastMonthsValues,
+} from '../../utils/countAppointmentsInMonth';
 
 interface MonthDTO {
   id: string;
@@ -76,7 +80,7 @@ const Charts: React.FC = () => {
   });
 
   useEffect(() => {
-    async function actualYearEdit(): Promise<any> {
+    async function yearEdit(): Promise<any> {
       const { data } = await api.get<MonthDTO[]>('appointments/info');
 
       const formatted = data.map((edit) => {
@@ -87,195 +91,41 @@ const Charts: React.FC = () => {
         };
       });
 
-      const dateNow = format(new Date(Date.now()), 'yyyy');
-
-      const dataMonths = {
-        monthJanuary: formatted.filter(
-          (item) =>
-            item.monthFormatted === 'January' && item.yearFormatted === dateNow,
-        ).length,
-
-        monthFebruary: formatted.filter(
-          (item) =>
-            item.monthFormatted === 'February' &&
-            item.yearFormatted === dateNow,
-        ).length,
-
-        monthMarch: formatted.filter(
-          (item) =>
-            item.monthFormatted === 'March' && item.yearFormatted === dateNow,
-        ).length,
-
-        monthApril: formatted.filter(
-          (item) =>
-            item.monthFormatted === 'April' && item.yearFormatted === dateNow,
-        ).length,
-
-        monthMay: formatted.filter(
-          (item) =>
-            item.monthFormatted === 'May' && item.yearFormatted === dateNow,
-        ).length,
-
-        monthJune: formatted.filter(
-          (item) =>
-            item.monthFormatted === 'June' && item.yearFormatted === dateNow,
-        ).length,
-
-        monthJuly: formatted.filter(
-          (item) =>
-            item.monthFormatted === 'July' && item.yearFormatted === dateNow,
-        ).length,
-
-        monthAugust: formatted.filter(
-          (item) =>
-            item.monthFormatted === 'August' && item.yearFormatted === dateNow,
-        ).length,
-
-        monthSeptember: formatted.filter(
-          (item) =>
-            item.monthFormatted === 'September' &&
-            item.yearFormatted === dateNow,
-        ).length,
-
-        monthOctober: formatted.filter(
-          (item) =>
-            item.monthFormatted === 'October' && item.yearFormatted === dateNow,
-        ).length,
-
-        monthNovember: formatted.filter(
-          (item) =>
-            item.monthFormatted === 'November' &&
-            item.yearFormatted === dateNow,
-        ).length,
-
-        monthDecember: formatted.filter(
-          (item) =>
-            item.monthFormatted === 'December' &&
-            item.yearFormatted === dateNow,
-        ).length,
-      };
+      const actualCountMonths = ActualMonthsValues(formatted);
+      const lastCountMonths = LastMonthsValues(formatted);
 
       setActualValueMonths({
-        actualJanuary: dataMonths.monthJanuary,
-        actualFebruary: dataMonths.monthFebruary,
-        actualMarch: dataMonths.monthMarch,
-        actualApril: dataMonths.monthApril,
-        actualMay: dataMonths.monthMay,
-        actualJune: dataMonths.monthJune,
-        actualJuly: dataMonths.monthJuly,
-        actualAugust: dataMonths.monthAugust,
-        actualSeptember: dataMonths.monthSeptember,
-        actualOctober: dataMonths.monthOctober,
-        actualNovember: dataMonths.monthNovember,
-        actualDecember: dataMonths.monthDecember,
+        actualJanuary: actualCountMonths?.January,
+        actualFebruary: actualCountMonths?.February,
+        actualMarch: actualCountMonths?.March,
+        actualApril: actualCountMonths?.April,
+        actualMay: actualCountMonths?.May,
+        actualJune: actualCountMonths?.June,
+        actualJuly: actualCountMonths?.July,
+        actualAugust: actualCountMonths?.August,
+        actualSeptember: actualCountMonths?.September,
+        actualOctober: actualCountMonths?.October,
+        actualNovember: actualCountMonths?.November,
+        actualDecember: actualCountMonths?.December,
       });
-    }
-
-    actualYearEdit();
-  }, []);
-
-  useEffect(() => {
-    async function lastYearEdit(): Promise<any> {
-      const { data } = await api.get<MonthDTO[]>('appointments/info');
-
-      const formatted = data.map((edit) => {
-        return {
-          ...edit,
-          yearFormatted: format(parseISO(edit.date), 'yyyy'),
-          monthFormatted: format(parseISO(edit.date), 'MMMM'),
-        };
-      });
-
-      const dateNow = format(
-        sub(new Date(Date.now()), {
-          years: 1,
-        }),
-        'yyyy',
-      );
-
-      const dataMonths = {
-        monthJanuary: formatted.filter(
-          (item) =>
-            item.monthFormatted === 'January' && item.yearFormatted === dateNow,
-        ).length,
-
-        monthFebruary: formatted.filter(
-          (item) =>
-            item.monthFormatted === 'February' &&
-            item.yearFormatted === dateNow,
-        ).length,
-
-        monthMarch: formatted.filter(
-          (item) =>
-            item.monthFormatted === 'March' && item.yearFormatted === dateNow,
-        ).length,
-
-        monthApril: formatted.filter(
-          (item) =>
-            item.monthFormatted === 'April' && item.yearFormatted === dateNow,
-        ).length,
-
-        monthMay: formatted.filter(
-          (item) =>
-            item.monthFormatted === 'May' && item.yearFormatted === dateNow,
-        ).length,
-
-        monthJune: formatted.filter(
-          (item) =>
-            item.monthFormatted === 'June' && item.yearFormatted === dateNow,
-        ).length,
-
-        monthJuly: formatted.filter(
-          (item) =>
-            item.monthFormatted === 'July' && item.yearFormatted === dateNow,
-        ).length,
-
-        monthAugust: formatted.filter(
-          (item) =>
-            item.monthFormatted === 'August' && item.yearFormatted === dateNow,
-        ).length,
-
-        monthSeptember: formatted.filter(
-          (item) =>
-            item.monthFormatted === 'September' &&
-            item.yearFormatted === dateNow,
-        ).length,
-
-        monthOctober: formatted.filter(
-          (item) =>
-            item.monthFormatted === 'October' && item.yearFormatted === dateNow,
-        ).length,
-
-        monthNovember: formatted.filter(
-          (item) =>
-            item.monthFormatted === 'November' &&
-            item.yearFormatted === dateNow,
-        ).length,
-
-        monthDecember: formatted.filter(
-          (item) =>
-            item.monthFormatted === 'December' &&
-            item.yearFormatted === dateNow,
-        ).length,
-      };
 
       setLastValueMonths({
-        lastJanuary: dataMonths.monthJanuary,
-        lastFebruary: dataMonths.monthFebruary,
-        lastMarch: dataMonths.monthMarch,
-        lastApril: dataMonths.monthApril,
-        lastMay: dataMonths.monthMay,
-        lastJune: dataMonths.monthJune,
-        lastJuly: dataMonths.monthJuly,
-        lastAugust: dataMonths.monthAugust,
-        lastSeptember: dataMonths.monthSeptember,
-        lastOctober: dataMonths.monthOctober,
-        lastNovember: dataMonths.monthNovember,
-        lastDecember: dataMonths.monthDecember,
+        lastJanuary: lastCountMonths?.January,
+        lastFebruary: lastCountMonths?.February,
+        lastMarch: lastCountMonths?.March,
+        lastApril: lastCountMonths?.April,
+        lastMay: lastCountMonths?.May,
+        lastJune: lastCountMonths?.June,
+        lastJuly: lastCountMonths?.July,
+        lastAugust: lastCountMonths?.August,
+        lastSeptember: lastCountMonths?.September,
+        lastOctober: lastCountMonths?.October,
+        lastNovember: lastCountMonths?.November,
+        lastDecember: lastCountMonths?.December,
       });
     }
 
-    lastYearEdit();
+    yearEdit();
   }, []);
 
   const {
@@ -314,13 +164,31 @@ const Charts: React.FC = () => {
         width={980}
         height={540}
         options={{
+          title: {
+            display: true,
+            text: 'Clientes atendidos',
+            fontFamily: 'sans-serif',
+            fontSize: 20,
+            fontColor: '#999591',
+          },
           legend: {
             display: true,
             labels: {
-              fontFamily: 'Roboto-Slab',
-              fontSize: 20,
+              fontFamily: 'sans-serif',
+              fontSize: 18,
               fontColor: '#999591',
             },
+          },
+          tooltips: {
+            titleFontFamily: 'sans-serif',
+            titleFontSize: 18,
+            titleFontColor: '#999591',
+            bodyFontFamily: 'sans-serif',
+            bodyFontSize: 16,
+            bodyFontColor: '#999591',
+            footerFontFamily: 'sans-serif',
+            footerFontSize: 16,
+            footerFontColor: '#999591',
           },
         }}
         data={{
@@ -339,7 +207,7 @@ const Charts: React.FC = () => {
           ],
           datasets: [
             {
-              label: 'Clientes atentidos - Ano atual',
+              label: 'Ano atual',
               fill: false,
               type: 'line',
               lineTension: 0.1,
@@ -374,7 +242,7 @@ const Charts: React.FC = () => {
               ],
             },
             {
-              label: 'Clientes atentidos - Ano anterior',
+              label: 'Ano anterior',
               fill: false,
               type: 'bar',
               lineTension: 0.1,
