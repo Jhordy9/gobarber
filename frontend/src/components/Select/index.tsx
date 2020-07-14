@@ -11,12 +11,19 @@ interface SelectProps extends CreatableProps<OptionTypeBase> {
   name: string;
   containerStyle?: object;
   icon?: React.ComponentType<IconBaseProps>;
+  options?: OptionsData[];
+}
+
+interface OptionsData {
+  label: string;
+  value: string;
 }
 
 const Select: React.FC<SelectProps> = ({
   name,
   containerStyle = {},
   icon: Icon,
+  options = [],
   ...rest
 }) => {
   const selectRef = useRef<any>(null);
@@ -55,6 +62,12 @@ const Select: React.FC<SelectProps> = ({
         }
         return ref.state.value.value;
       },
+      setValue: (ref, value) => {
+        ref.select.select.setValue(value);
+      },
+      clearValue: (ref) => {
+        ref.select.clearValue();
+      },
     });
   }, [fieldName, registerField, rest.isMulti]);
 
@@ -70,9 +83,13 @@ const Select: React.FC<SelectProps> = ({
       <ReactSelect
         onFocus={handleInputFocus}
         onBlur={handleInputBlur}
-        defaultValue={defaultValue}
+        defaultValue={
+          defaultValue &&
+          options.find((option) => option.value === defaultValue)
+        }
         classNamePrefix="react-select"
         ref={selectRef}
+        options={options}
         isSearchable={false}
         theme={(theme) => ({
           ...theme,
