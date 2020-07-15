@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useCallback } from 'react';
+import React, { useRef, useEffect } from 'react';
 
 import SwitchSelector from 'react-native-switch-selector';
 
@@ -13,12 +13,14 @@ interface SelectProps {
   name: string;
   options: OptionsProps[];
   propsStyles?: {};
+  initial: number;
 }
 
 const SelectSwitch: React.RefForwardingComponent<SelectProps, any> = ({
   name,
   options,
   propsStyles = {},
+  initial,
   ...rest
 }) => {
   const { fieldName, registerField, defaultValue } = useField(name);
@@ -59,6 +61,7 @@ const SelectSwitch: React.RefForwardingComponent<SelectProps, any> = ({
 
   return (
     <SwitchSelector
+      initial={initial}
       ref={selectRef}
       style={propsStyles}
       borderRadius={10}

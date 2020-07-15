@@ -1,4 +1,4 @@
-import React, { useRef, useCallback } from 'react';
+import React, { useRef, useCallback, useState, useEffect } from 'react';
 import {
   View,
   ScrollView,
@@ -14,6 +14,7 @@ import { useNavigation } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/Feather';
 import ImagePicker from 'react-native-image-picker';
 import Input from '../../components/Input';
+import SelectSwitch from '../../components/SelectSwitch';
 import Button from '../../components/Button';
 import getValidationErrors from '../../utils/getValidationErrors';
 import {
@@ -32,6 +33,7 @@ import { useAuth } from '../../hooks/auth';
 interface ProfileFormData {
   name: string;
   email: string;
+  category: string;
   old_password: string;
   password: string;
   password_confirmation: string;
@@ -44,9 +46,24 @@ const Profile: React.FC = () => {
   const navigation = useNavigation();
 
   const emailInputRef = useRef<TextInput>(null);
+  const userInputRef = useRef<TextInput>(null);
   const oldPasswordInputRef = useRef<TextInput>(null);
   const passwordInputRef = useRef<TextInput>(null);
   const confirmPasswordInputRef = useRef<TextInput>(null);
+
+  const [initialValue, setInitialValue] = useState(() => user.category);
+
+  let indexInitial = 0;
+
+  switch (initialValue) {
+    case 'Cliente':
+      indexInitial = 0;
+      break;
+    case 'Barbeiro':
+      indexInitial = 1;
+      break;
+    default:
+  }
 
   const handleSignUp = useCallback(
     async (data: ProfileFormData) => {
@@ -58,6 +75,7 @@ const Profile: React.FC = () => {
           email: Yup.string()
             .required('E-mail obrigatório')
             .email('Digite um e-mail válido'),
+          category: Yup.string().required('Selecione uma categoria'),
           old_password: Yup.string(),
           password: Yup.string().when('old_password', {
             is: (val) => !!val.length,
@@ -80,6 +98,7 @@ const Profile: React.FC = () => {
         const {
           name,
           email,
+          category,
           old_password,
           password,
           password_confirmation,
@@ -88,6 +107,7 @@ const Profile: React.FC = () => {
         const formData = {
           name,
           email,
+          category,
           ...(old_password
             ? {
               old_password,
@@ -140,6 +160,7 @@ const Profile: React.FC = () => {
           return;
         }
 
+        // eslint-disable-next-line no-undef
         const data = new FormData();
 
         data.append('avatar', {
@@ -188,7 +209,11 @@ const Profile: React.FC = () => {
             </View>
 
             <Form
-              initialData={{ name: user.name, email: user.email }}
+              initialData={{
+                name: user.name,
+                email: user.email,
+                category: initialValue,
+              }}
               ref={formRef}
               onSubmit={handleSignUp}
             >
@@ -213,6 +238,18 @@ const Profile: React.FC = () => {
                 returnKeyType="next"
                 onSubmitEditing={() => {
                   oldPasswordInputRef.current?.focus();
+                }}
+              />
+              <SelectSwitch
+                initial={indexInitial}
+                style={{ marginBottom: 8 }}
+                name="category"
+                options={[
+                  { label: 'Cliente', value: 'Cliente' },
+                  { label: 'Barbeiro', value: 'Barbeiro' },
+                ]}
+                onSubmitEditing={() => {
+                  userInputRef.current?.focus();
                 }}
               />
               <Input
