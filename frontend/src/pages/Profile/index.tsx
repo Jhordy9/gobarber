@@ -4,7 +4,6 @@ import React, {
   ChangeEvent,
   useState,
   useEffect,
-  useLayoutEffect,
 } from 'react';
 import {
   FiMail,
@@ -37,21 +36,12 @@ interface ProfileFormData {
   password_confirmation: string;
 }
 
-interface OptionsDataObject {
-  label: string;
-  value: string;
-}
-
 type OptionsData = Array<{
   label: string;
   value: string;
 }>;
 
 const Profile: React.FC = () => {
-  // const [initialValue, setInitialValue] = useState<OptionsDataObject>({
-  //   label: '',
-  //   value: '',
-  // });
   const [optionsValue, setOptionsValue] = useState<OptionsData>([]);
 
   const formRef = useRef<FormHandles>(null);
