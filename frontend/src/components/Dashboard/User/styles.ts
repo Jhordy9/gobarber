@@ -95,19 +95,34 @@ export const NextAppointment = styled.div`
 export const Section = styled.section`
   margin-top: 48px;
 
+  h1 {
+    margin-bottom: 24px;
+    font-size: 36px;
+  }
+
   > strong {
     color: #999591;
-    font-size: 20px;
+    font-size: 26px;
     line-height: 26px;
     border-bottom: 1px solid #3e3b47;
     display: block;
     padding-bottom: 16px;
     margin-bottom: 16px;
   }
+`;
 
-  > p {
-    color: #999591;
-  }
+export const HourButton = styled.button`
+  width: 100px;
+  height: 40px;
+  border: none;
+  border-radius: 6px;
+  margin-right: 16px;
+
+  background: #3e3b47;
+
+  font-size: 22px;
+  color: #f4ede8;
+  font-weight: 500;
 `;
 
 export const Appointment = styled.div`
