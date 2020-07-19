@@ -1,5 +1,6 @@
 import React, { useState, useCallback, useEffect, useMemo } from 'react';
 import DayPicker, { DayModifiers } from 'react-day-picker';
+import { useParams, useRouteMatch } from 'react-router-dom';
 
 import { isToday, format, parseISO, isAfter } from 'date-fns';
 import { FiClock } from 'react-icons/fi';
@@ -16,7 +17,6 @@ import {
   Schedule,
   Section,
   HourButton,
-  Appointment,
   Calendar,
 } from './styles';
 import { useAuth } from '../../../hooks/auth';
@@ -37,12 +37,24 @@ interface Appointment {
   };
 }
 
+interface RouteParams {
+  providerId: string;
+}
+
 const User: React.FC = () => {
+  const route = useParams();
+  const route2 = useRouteMatch();
+
+  const routeParams = route as RouteParams;
+  const routeParams2 = route2.params as RouteParams;
+
   const [monthAvailabilty, setMonthAvailability] = useState<
     MonthAvailabilityItem[]
   >([]);
   const [selectedDate, setSelectedDate] = useState(new Date());
-  const [selectedProvider, setSelectedProvider] = useState();
+  const [selectedProvider, setSelectedProvider] = useState(
+    routeParams2.providerId,
+  );
   const [currentMonth, setCurrentMonth] = useState(new Date());
 
   const { user } = useAuth();
@@ -61,6 +73,8 @@ const User: React.FC = () => {
     setSelectedProvider(providerId);
   }, []);
 
+  console.log(selectedProvider);
+
   useEffect(() => {
     api
       .get(`/providers/${user.id}/month-availability`, {
@@ -74,9 +88,9 @@ const User: React.FC = () => {
       });
   }, [currentMonth, user.id]);
 
-  useEffect(() => {
-    api.get();
-  }, []);
+  // useEffect(() => {
+  //   api.get();
+  // }, []);
 
   const disableDays = useMemo(() => {
     const dates = monthAvailabilty
@@ -104,7 +118,7 @@ const User: React.FC = () => {
             <h1>Horários disponíveis</h1>
 
             <strong>Manhã</strong>
-            <HourButton>8:00</HourButton>
+            <HourButton onClick={() => handleSelectedProvider}>8:00</HourButton>
             <HourButton>9:00</HourButton>
             <HourButton>10:00</HourButton>
             <HourButton>11:00</HourButton>
