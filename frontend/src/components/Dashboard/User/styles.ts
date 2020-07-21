@@ -1,6 +1,22 @@
 import styled from 'styled-components';
 import { shade } from 'polished';
 
+import Button from '../../Button';
+
+interface ProviderProps {
+  selected: boolean;
+}
+
+interface HourProps {
+  available: boolean;
+  selected: boolean;
+  enabled: boolean;
+}
+
+interface HourTextProps {
+  selected: boolean;
+}
+
 export const Container = styled.div``;
 
 export const Content = styled.main`
@@ -14,6 +30,7 @@ export const Schedule = styled.div`
   margin-right: 120px;
 
   h1 {
+    margin-top: 26px;
     font-size: 36px;
   }
 
@@ -39,56 +56,54 @@ export const Schedule = styled.div`
   }
 `;
 
-export const NextAppointment = styled.div`
-  margin-top: 64px;
+export const ContentSlider = styled.div`
+  max-width: 950px;
 
-  > strong {
-    color: #999591;
-    font-size: 20px;
-    font-weight: 400;
+  background: #3e3b47;
+  align-items: center;
+  padding: 16px 24px;
+  border-radius: 10px;
+  margin-top: 24px;
+  align-items: center;
+
+  .SliderDiv {
+    height: 150px;
+
+    .slick-slide {
+      width: 210px !important;
+      margin-right: 16px;
+    }
+  }
+`;
+
+export const Provider = styled.button<ProviderProps>`
+  padding: 16px 24px;
+  border-radius: 10px;
+  border: 1px solid #ff9000;
+
+  background: ${(props) => (props.selected ? '#232139' : '#3e3b47')};
+
+  & {
+    margin-right: 16px;
   }
 
-  div {
-    background: #3e3b47;
-    display: flex;
-    align-items: center;
-    padding: 16px 24px;
-    border-radius: 10px;
-    margin-top: 24px;
-    position: relative;
+  img {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    margin-bottom: 10px;
+    margin-left: 0 auto;
+    margin-right: 0 auto;
+  }
 
-    &::before {
-      position: absolute;
-      height: 80%;
-      width: 1px;
-      left: 0;
-      top: 10%;
-      content: '';
-      background: #ff9000;
-    }
+  strong {
+    color: #fff;
+    font-size: 20px;
+    text-align: center;
+  }
 
-    img {
-      width: 80px;
-      height: 80px;
-      border-radius: 50%;
-    }
-
-    strong {
-      margin-left: 24px;
-      color: #fff;
-    }
-
-    span {
-      margin-left: auto;
-      display: flex;
-      align-items: center;
-      color: #999591;
-
-      svg {
-        color: #ff9000;
-        margin-right: 8px;
-      }
-    }
+  &:hover {
+    background: ${shade(0.2, '#3e3b47')};
   }
 `;
 
@@ -96,7 +111,6 @@ export const Section = styled.section`
   margin-top: 48px;
 
   h1 {
-    margin-bottom: 24px;
     font-size: 36px;
   }
 
@@ -111,62 +125,27 @@ export const Section = styled.section`
   }
 `;
 
-export const HourButton = styled.button`
+export const HourButton = styled.button<HourProps>`
   width: 100px;
   height: 40px;
   border: none;
   border-radius: 6px;
   margin-right: 16px;
 
-  background: #3e3b47;
-
-  font-size: 22px;
-  color: #f4ede8;
-  font-weight: 500;
+  background: ${(props) => (props.selected ? '#ff9000' : '#3e3b47')};
+  opacity: ${(props) => (props.available ? 1 : 0.3)};
 `;
 
-export const Appointment = styled.div`
-  display: flex;
-  align-items: center;
+export const HourText = styled.span<HourTextProps>`
+  color: ${(props) => (props.selected ? '#232129' : '#f4ede8')};
+  font-family: 500;
+  font-size: 22px;
 
-  & + div {
-    margin-top: 16px;
-  }
+  margin-left: 26px;
+`;
 
-  span {
-    margin-left: auto;
-    display: flex;
-    align-items: center;
-    color: #f4ede8;
-    width: 70px;
-
-    svg {
-      color: #ff9000;
-      margin-right: 8px;
-    }
-  }
-
-  div {
-    flex: 1;
-    background: #3e3b47;
-    display: flex;
-    align-items: center;
-    padding: 16px 24px;
-    border-radius: 10px;
-    margin-left: 24px;
-
-    img {
-      width: 56px;
-      height: 56px;
-      border-radius: 50%;
-    }
-
-    strong {
-      margin-left: 24px;
-      color: #fff;
-      font-size: 20px;
-    }
-  }
+export const CreateButton = styled(Button)`
+  font-size: 22px;
 `;
 
 export const Calendar = styled.aside`

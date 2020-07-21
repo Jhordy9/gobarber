@@ -1,22 +1,23 @@
 import React, { useState, useCallback, useEffect, useMemo } from 'react';
 import DayPicker, { DayModifiers } from 'react-day-picker';
-import { useParams, useRouteMatch } from 'react-router-dom';
 
-import { isToday, format, parseISO, isAfter } from 'date-fns';
-import { FiClock } from 'react-icons/fi';
-
-import ptBR from 'date-fns/locale/pt-BR';
-import 'react-day-picker/lib/style.css';
+import { format } from 'date-fns';
+import Slider, { Settings } from 'react-slick';
+import 'slick-carousel/slick/slick.css';
+import 'slick-carousel/slick/slick-theme.css';
 
 import ComponentHeader from '../../Header';
-import ComponentSlider from '../../Slider';
 
 import {
   Container,
   Content,
   Schedule,
+  ContentSlider,
+  Provider,
   Section,
   HourButton,
+  HourText,
+  CreateButton,
   Calendar,
 } from './styles';
 import { useAuth } from '../../../hooks/auth';
@@ -27,35 +28,29 @@ interface MonthAvailabilityItem {
   available: boolean;
 }
 
-interface Appointment {
+interface ProviderData {
   id: string;
-  date: string;
-  hourFormatted: string;
-  user: {
-    name: string;
-    avatar_url: string;
-  };
+  name: string;
+  avatar_url: string;
+  category: string;
 }
 
-interface RouteParams {
-  providerId: string;
+interface AvailabilityItem {
+  hour: number;
+  available: boolean;
 }
 
 const User: React.FC = () => {
-  const route = useParams();
-  const route2 = useRouteMatch();
-
-  const routeParams = route as RouteParams;
-  const routeParams2 = route2.params as RouteParams;
-
+  const [providers, setProviders] = useState<ProviderData[]>([]);
+  const [selectedProvider, setSelectedProvider] = useState<string[]>([]);
+  const [availability, setAvailability] = useState<AvailabilityItem[]>([]);
+  const [selectedDate, setSelectedDate] = useState(new Date());
   const [monthAvailabilty, setMonthAvailability] = useState<
     MonthAvailabilityItem[]
   >([]);
-  const [selectedDate, setSelectedDate] = useState(new Date());
-  const [selectedProvider, setSelectedProvider] = useState(
-    routeParams2.providerId,
-  );
   const [currentMonth, setCurrentMonth] = useState(new Date());
+  const [selectedHour, setSelectedHour] = useState(0);
+  const [toggleSlider, setToggleSlider] = useState(false);
 
   const { user } = useAuth();
 
@@ -69,11 +64,26 @@ const User: React.FC = () => {
     }
   }, []);
 
-  const handleSelectedProvider = useCallback((providerId: string) => {
-    setSelectedProvider(providerId);
+  const handleSelectedProvider = useCallback(
+    (id: string) => {
+      const alreadySelected = selectedProvider.findIndex((item) => item === id);
+      if (alreadySelected >= 0) {
+        const filteredItems = selectedProvider.filter((item) => item !== id);
+        setSelectedProvider(filteredItems);
+      } else {
+        setSelectedProvider([id]);
+      }
+    },
+    [selectedProvider],
+  );
+
+  const handleSelectHour = useCallback((hour: number) => {
+    setSelectedHour(hour);
   }, []);
 
-  console.log(selectedProvider);
+  const handleToggleSlider = useCallback(() => {
+    return setToggleSlider(true);
+  }, []);
 
   useEffect(() => {
     api
@@ -88,9 +98,33 @@ const User: React.FC = () => {
       });
   }, [currentMonth, user.id]);
 
-  // useEffect(() => {
-  //   api.get();
-  // }, []);
+  useEffect(() => {
+    async function loadProviders(): Promise<void> {
+      const { data } = await api.get<ProviderData[]>('/providers');
+
+      const listProviders = data.filter((dt) => {
+        return dt.category === 'Barbeiro';
+      });
+
+      setProviders(listProviders);
+    }
+
+    loadProviders();
+  }, []);
+
+  useEffect(() => {
+    api
+      .get(`providers/${selectedProvider}/day-availability`, {
+        params: {
+          year: selectedDate.getFullYear(),
+          month: selectedDate.getMonth() + 1,
+          day: selectedDate.getDate(),
+        },
+      })
+      .then((response) => {
+        setAvailability(response.data);
+      });
+  }, [selectedDate, selectedProvider]);
 
   const disableDays = useMemo(() => {
     const dates = monthAvailabilty
@@ -104,6 +138,66 @@ const User: React.FC = () => {
     return dates;
   }, [currentMonth, monthAvailabilty]);
 
+  const morningAvailability = useMemo(() => {
+    return availability
+      .filter(({ hour }) => hour < 12)
+      .map(({ hour, available }) => {
+        return {
+          hour,
+          available,
+          hourFormatted: format(new Date().setHours(hour), 'HH:00'),
+        };
+      });
+  }, [availability]);
+
+  const afternoonAvailability = useMemo(() => {
+    return availability
+      .filter(({ hour }) => hour >= 12)
+      .map(({ hour, available }) => {
+        return {
+          hour,
+          available,
+          hourFormatted: format(new Date().setHours(hour), 'HH:00'),
+        };
+      });
+  }, [availability]);
+
+  const settings: Settings = {
+    dots: true,
+    infinite: false,
+    speed: 500,
+    slidesToShow: 4,
+    slidesToScroll: 4,
+    initialSlide: 0,
+    className: 'SliderDiv',
+    responsive: [
+      {
+        breakpoint: 1024,
+        settings: {
+          slidesToShow: 3,
+          slidesToScroll: 3,
+          infinite: true,
+          dots: true,
+        },
+      },
+      {
+        breakpoint: 600,
+        settings: {
+          slidesToShow: 2,
+          slidesToScroll: 2,
+          initialSlide: 2,
+        },
+      },
+      {
+        breakpoint: 480,
+        settings: {
+          slidesToShow: 1,
+          slidesToScroll: 1,
+        },
+      },
+    ],
+  };
+
   return (
     <Container>
       <ComponentHeader />
@@ -112,27 +206,63 @@ const User: React.FC = () => {
         <Schedule>
           <h1>Barbeiros</h1>
 
-          <ComponentSlider />
+          <span>
+            Selecione um barbeiro para verificar os horários disponíveis.
+          </span>
 
+          <ContentSlider>
+            <Slider {...settings}>
+              {providers.map((dt) => (
+                <Provider
+                  key={dt.id}
+                  onClick={() => handleSelectedProvider(dt.id)}
+                  selected={selectedProvider.indexOf(dt.id) >= 0}
+                >
+                  <img src={dt.avatar_url} alt={dt.name} />
+                  <strong>{dt.name}</strong>
+                </Provider>
+              ))}
+            </Slider>
+          </ContentSlider>
+
+          <h1>Horários disponíveis</h1>
           <Section>
-            <h1>Horários disponíveis</h1>
-
             <strong>Manhã</strong>
-            <HourButton onClick={() => handleSelectedProvider}>8:00</HourButton>
-            <HourButton>9:00</HourButton>
-            <HourButton>10:00</HourButton>
-            <HourButton>11:00</HourButton>
-            <HourButton>12:00</HourButton>
+            {morningAvailability.map(({ hourFormatted, available, hour }) => (
+              <HourButton
+                enabled={available}
+                selected={selectedHour === hour}
+                available={available}
+                key={hourFormatted}
+                onClick={() => handleSelectHour(hour)}
+              >
+                <HourText selected={selectedHour === hour}>
+                  {hourFormatted}{' '}
+                </HourText>
+              </HourButton>
+            ))}
           </Section>
 
           <Section>
             <strong>Tarde</strong>
-            <HourButton>13:00</HourButton>
-            <HourButton>14:00</HourButton>
-            <HourButton>15:00</HourButton>
-            <HourButton>16:00</HourButton>
-            <HourButton>17:00</HourButton>
+            {afternoonAvailability.map(({ hourFormatted, available, hour }) => (
+              <HourButton
+                enabled={available}
+                selected={selectedHour === hour}
+                available={available}
+                key={hourFormatted}
+                onClick={() => handleSelectHour(hour)}
+              >
+                <HourText selected={selectedHour === hour}>
+                  {hourFormatted}{' '}
+                </HourText>
+              </HourButton>
+            ))}
           </Section>
+
+          <CreateButton style={{ marginTop: 50 }}>
+            Criar agendamento
+          </CreateButton>
         </Schedule>
         <Calendar>
           <DayPicker
