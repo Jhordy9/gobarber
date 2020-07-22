@@ -7,6 +7,7 @@ import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
 
 import ComponentHeader from '../../Header';
+import { useToast } from '../../../hooks/toast';
 
 import {
   Container,
@@ -50,9 +51,9 @@ const User: React.FC = () => {
   >([]);
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [selectedHour, setSelectedHour] = useState(0);
-  const [toggleSlider, setToggleSlider] = useState(false);
 
   const { user } = useAuth();
+  const { addToast } = useToast();
 
   const handleMonthChange = useCallback((month: Date) => {
     setCurrentMonth(month);
@@ -79,10 +80,6 @@ const User: React.FC = () => {
 
   const handleSelectHour = useCallback((hour: number) => {
     setSelectedHour(hour);
-  }, []);
-
-  const handleToggleSlider = useCallback(() => {
-    return setToggleSlider(true);
   }, []);
 
   useEffect(() => {
@@ -161,6 +158,35 @@ const User: React.FC = () => {
         };
       });
   }, [availability]);
+
+  const handleCreateAppointment = useCallback(async () => {
+    try {
+      const date = new Date(selectedDate);
+
+      date.setHours(selectedHour);
+      date.setMinutes(0);
+
+      await api.post('appointments', {
+        provider_id: selectedProvider.toString(),
+        date,
+      });
+
+      addToast({
+        type: 'success',
+        title: 'Agendamento criado.',
+        description: 'Agendamento criado com sucesso!',
+      });
+
+      setTimeout(() => window.location.reload(true), 1500);
+    } catch (err) {
+      addToast({
+        type: 'error',
+        title: 'Erro na criação do agendamento',
+        description:
+          'Ocorreu algum erro ao criar o agendamento, tente novamente',
+      });
+    }
+  }, [selectedDate, selectedHour, selectedProvider, addToast]);
 
   const settings: Settings = {
     dots: true,
@@ -260,7 +286,10 @@ const User: React.FC = () => {
             ))}
           </Section>
 
-          <CreateButton style={{ marginTop: 50 }}>
+          <CreateButton
+            style={{ marginTop: 50 }}
+            onClick={handleCreateAppointment}
+          >
             Criar agendamento
           </CreateButton>
         </Schedule>
