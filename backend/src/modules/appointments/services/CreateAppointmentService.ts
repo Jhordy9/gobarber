@@ -10,6 +10,7 @@ import ICacheProvider from '@shared/container/providers/CacheProvider/models/ICa
 interface IRequest {
   provider_id: string;
   user_id: string;
+  type: string;
   date: Date;
 }
 
@@ -32,6 +33,7 @@ class CreateAppointmentService {
     provider_id,
     user_id,
     date,
+    type,
   }: IRequest): Promise<Appointment> {
     const appointmentDate = startOfHour(date);
 
@@ -59,6 +61,7 @@ class CreateAppointmentService {
     const appointment = await this.appointmentsRepository.create({
       provider_id,
       user_id,
+      type,
       date: appointmentDate,
     });
 

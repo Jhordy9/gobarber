@@ -29,6 +29,9 @@ class Appointment {
   @JoinColumn({ name: 'user_id' })
   user: User;
 
+  @Column()
+  type: string;
+
   @Column('timestamp with time zone')
   date: Date;
 
