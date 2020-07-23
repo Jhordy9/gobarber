@@ -28,6 +28,7 @@ describe('CreateAppointment', () => {
       date: new Date(2020, 4, 10, 13),
       provider_id: 'provider_id',
       user_id: 'user_id',
+      type: 'cabelo/barba',
     });
 
     expect(appointment).toHaveProperty('id');
@@ -41,6 +42,7 @@ describe('CreateAppointment', () => {
       date: appointmentDate,
       provider_id: 'provider_id',
       user_id: 'user_id',
+      type: 'cabelo/barba',
     });
 
     await expect(
@@ -48,6 +50,7 @@ describe('CreateAppointment', () => {
         date: appointmentDate,
         provider_id: 'provider_id',
         user_id: 'user_id',
+        type: 'cabelo/barba',
       }),
     ).rejects.toBeInstanceOf(AppError);
   });
@@ -62,6 +65,7 @@ describe('CreateAppointment', () => {
         date: new Date(2020, 4, 10, 11),
         provider_id: 'provider_id',
         user_id: 'user_id',
+        type: 'cabelo/barba',
       }),
     ).rejects.toBeInstanceOf(AppError);
   });
@@ -76,6 +80,7 @@ describe('CreateAppointment', () => {
         date: new Date(2020, 4, 10, 13),
         provider_id: 'same_id',
         user_id: 'same_id',
+        type: 'cabelo/barba',
       }),
     ).rejects.toBeInstanceOf(AppError);
   });
@@ -90,6 +95,7 @@ describe('CreateAppointment', () => {
         date: new Date(2020, 4, 11, 7),
         provider_id: 'provider_id',
         user_id: 'user_id',
+        type: 'cabelo/barba',
       }),
     ).rejects.toBeInstanceOf(AppError);
     await expect(
@@ -97,6 +103,7 @@ describe('CreateAppointment', () => {
         date: new Date(2020, 4, 11, 18),
         provider_id: 'provider_id',
         user_id: 'user_id',
+        type: 'cabelo/barba',
       }),
     ).rejects.toBeInstanceOf(AppError);
   });
