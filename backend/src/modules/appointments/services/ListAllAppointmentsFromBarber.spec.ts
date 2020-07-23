@@ -1,10 +1,10 @@
 // import AppError from '@shared/errors/AppError';
 import FakeAppointmentsRepository from '@modules/appointments/repositories/fakes/FakeAppointmentsRepository';
-import ListProviderAppointmentsService from '@modules/appointments/services/ListProviderAppointmentsService';
+import ListAllAppointmentsFromBarber from '@modules/appointments/services/ListAllAppointmentsFromBarber';
 import FakeCacheProvider from '@shared/container/providers/CacheProvider/fakes/FakeCacheProvider';
 
 let fakeAppointmentsRepository: FakeAppointmentsRepository;
-let listProviderAppointmentsService: ListProviderAppointmentsService;
+let listAllAppointmentsFromBarber: ListAllAppointmentsFromBarber;
 let fakeCacheProvider: FakeCacheProvider;
 
 describe('listProviderAppointments', () => {
@@ -12,7 +12,7 @@ describe('listProviderAppointments', () => {
     fakeAppointmentsRepository = new FakeAppointmentsRepository();
     fakeCacheProvider = new FakeCacheProvider();
 
-    listProviderAppointmentsService = new ListProviderAppointmentsService(
+    listAllAppointmentsFromBarber = new ListAllAppointmentsFromBarber(
       fakeAppointmentsRepository,
       fakeCacheProvider,
     );
@@ -33,7 +33,7 @@ describe('listProviderAppointments', () => {
       type: 'cabelo/barba',
     });
 
-    const appointments = await listProviderAppointmentsService.execute({
+    const appointments = await listAllAppointmentsFromBarber.execute({
       provider_id: 'provider',
       year: 2020,
       month: 5,
