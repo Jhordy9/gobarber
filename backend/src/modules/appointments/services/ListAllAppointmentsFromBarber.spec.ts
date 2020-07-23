@@ -35,9 +35,6 @@ describe('listProviderAppointments', () => {
 
     const appointments = await listAllAppointmentsFromBarber.execute({
       provider_id: 'provider',
-      year: 2020,
-      month: 5,
-      day: 20,
     });
 
     expect(appointments).toEqual([appointment1, appointment2]);
