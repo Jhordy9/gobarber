@@ -142,7 +142,7 @@ const User: React.FC = () => {
         return {
           hour,
           available,
-          hourFormatted: format(new Date().setHours(hour), 'HH:00'),
+          hourFormatted: format(new Date().setHours(hour), 'HH:30'),
         };
       });
   }, [availability]);
