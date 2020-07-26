@@ -1,4 +1,4 @@
-import { startOfHour, isBefore, getHours, format } from 'date-fns';
+import { isBefore, getHours, format, setHours, startOfHour } from 'date-fns';
 import { inject, injectable } from 'tsyringe';
 
 import AppError from '@shared/errors/AppError';
@@ -35,9 +35,7 @@ class CreateAppointmentService {
     date,
     type,
   }: IRequest): Promise<Appointment> {
-    const appointmentDate = startOfHour(date);
-
-    if (isBefore(appointmentDate, Date.now())) {
+    if (isBefore(date, Date.now())) {
       throw new AppError("You can't create an appointment on a past date.");
     }
 
@@ -45,12 +43,12 @@ class CreateAppointmentService {
       throw new AppError("You can't create an appointment with yourself");
     }
 
-    if (getHours(appointmentDate) < 8 || getHours(appointmentDate) > 17) {
+    if (getHours(date) < 8 || getHours(date) > 17) {
       throw new AppError('You can only create appointments between 8 and 5pm');
     }
 
     const findAppointmentInSameDate = await this.appointmentsRepository.findByDate(
-      appointmentDate,
+      date,
       provider_id,
     );
 
@@ -62,10 +60,10 @@ class CreateAppointmentService {
       provider_id,
       user_id,
       type,
-      date: appointmentDate,
+      date,
     });
 
-    const dateFormatted = format(appointmentDate, "dd/MM/yyy 'às' HH:mm'h'");
+    const dateFormatted = format(date, "dd/MM/yyy 'às' HH:mm'h'");
 
     await this.notificationsRepository.create({
       recipient_id: provider_id,
@@ -73,10 +71,7 @@ class CreateAppointmentService {
     });
 
     await this.cacheProvider.invalidate(
-      `provider-appointments:${provider_id}:${format(
-        appointmentDate,
-        'yyyy-M-d',
-      )}`,
+      `provider-appointments:${provider_id}:${format(date, 'yyyy-M-d')}`,
     );
 
     return appointment;
