@@ -162,7 +162,6 @@ const Profile: React.FC = () => {
     [addToast, updatedUser],
   );
 
-  console.log(initialValue);
 
   return (
     <Container>

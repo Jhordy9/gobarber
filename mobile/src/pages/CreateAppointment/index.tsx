@@ -155,7 +155,6 @@ const CreateAppointment: React.FC = () => {
     }
   }, [navigate, selectedDate, selectedHour, selectedProvider]);
 
-  console.log(selectedProvider);
 
   return (
     <Container>

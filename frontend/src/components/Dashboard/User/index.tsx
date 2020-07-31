@@ -1,3 +1,4 @@
+/* eslint-disable react/jsx-curly-newline */
 import React, { useState, useCallback, useEffect, useMemo } from 'react';
 import DayPicker, { DayModifiers } from 'react-day-picker';
 
@@ -15,7 +16,15 @@ import {
   Schedule,
   ContentSlider,
   Provider,
+  ContentCreateAppointment,
+  TypeTitle,
+  TypeButton,
+  TypeText,
   Section,
+  SectionHair,
+  SectionBeard,
+  ContentMorning,
+  ContentAfternoon,
   HourButton,
   HourText,
   CreateButton,
@@ -50,7 +59,12 @@ const User: React.FC = () => {
     MonthAvailabilityItem[]
   >([]);
   const [currentMonth, setCurrentMonth] = useState(new Date());
-  const [selectedHour, setSelectedHour] = useState(0);
+  const [selectedHairHour, setSelectedHairHour] = useState('50');
+  const [selectedBeardHour, setSelectedBeardHour] = useState('50');
+  const [selectedHair, setSelectedHair] = useState('');
+  const [selectedBeard, setSelectedBeard] = useState('');
+  const [dateHair, setDateHair] = useState(new Date());
+  const [dateBeard, setDateBeard] = useState(new Date());
 
   const { user } = useAuth();
   const { addToast } = useToast();
@@ -78,9 +92,55 @@ const User: React.FC = () => {
     [selectedProvider],
   );
 
-  const handleSelectHour = useCallback((hour: number) => {
-    setSelectedHour(hour);
-  }, []);
+  const handleSelectHairHour = useCallback(
+    (hour: any, available: boolean) => {
+      const thirtyHourPAR = hour.slice(3);
+
+      if (available === true && hour !== selectedBeardHour) {
+        if (thirtyHourPAR === '00' || thirtyHourPAR === '30') {
+          setSelectedHairHour(hour);
+        }
+
+        if (hour === selectedHairHour) {
+          setSelectedHairHour('50');
+        }
+      }
+    },
+    [selectedHairHour, selectedBeardHour],
+  );
+
+  const handleSelectBeardHour = useCallback(
+    (hour: any, available: boolean) => {
+      const thirtyHourPAR = hour.slice(3);
+
+      if (available === true && hour !== selectedHairHour) {
+        if (thirtyHourPAR === '00' || thirtyHourPAR === '30') {
+          setSelectedBeardHour(hour);
+        }
+
+        if (hour === selectedBeardHour) {
+          setSelectedBeardHour('50');
+        }
+      }
+    },
+    [selectedBeardHour, selectedHairHour],
+  );
+
+  const handleSelectHair = useCallback(() => {
+    if (selectedHair === '') {
+      setSelectedHair('Cabelo');
+    } else if (selectedHair === 'Cabelo') {
+      setSelectedHair('');
+    }
+  }, [selectedHair]);
+
+  const handleSelectBeard = useCallback(() => {
+    if (selectedBeard === '') {
+      setSelectedBeard('Barba');
+    } else if (selectedBeard === 'Barba') {
+      setSelectedBeard('');
+    }
+  }, [selectedBeard]);
 
   useEffect(() => {
     api
@@ -123,6 +183,45 @@ const User: React.FC = () => {
       });
   }, [selectedDate, selectedProvider]);
 
+  useEffect(() => {
+    const date = new Date(selectedDate);
+
+    const arrayHair = [];
+    const arrayBeard = [];
+    arrayHair.push(selectedHairHour);
+    arrayBeard.push(selectedBeardHour);
+
+    const fullHairHour: any = arrayHair.toString().slice(0, 2);
+    const halfHairHour: any = arrayHair.toString().slice(3);
+
+    const fullBeardHour: any = arrayBeard.toString().slice(0, 2);
+    const halfBeardHour: any = arrayBeard.toString().slice(3);
+
+    if (halfHairHour === '00') {
+      date.setHours(fullHairHour);
+      date.setMinutes(0);
+
+      setDateHair(date);
+    } else if (halfHairHour === '30') {
+      date.setHours(fullHairHour);
+      date.setMinutes(30);
+
+      setDateHair(date);
+    }
+
+    if (halfBeardHour === '00') {
+      date.setHours(fullBeardHour);
+      date.setMinutes(0);
+
+      setDateBeard(date);
+    } else if (halfBeardHour === '30') {
+      date.setHours(fullBeardHour);
+      date.setMinutes(30);
+
+      setDateBeard(date);
+    }
+  }, [selectedDate, selectedHairHour, selectedBeardHour]);
+
   const disableDays = useMemo(() => {
     const dates = monthAvailabilty
       .filter((monthDay) => monthDay.available === false)
@@ -142,7 +241,8 @@ const User: React.FC = () => {
         return {
           hour,
           available,
-          hourFormatted: format(new Date().setHours(hour), 'HH:30'),
+          fullHourFormatted: format(new Date().setHours(hour), 'HH:00'),
+          halfHourFormatted: format(new Date().setHours(hour), 'HH:30'),
         };
       });
   }, [availability]);
@@ -154,30 +254,41 @@ const User: React.FC = () => {
         return {
           hour,
           available,
-          hourFormatted: format(new Date().setHours(hour), 'HH:00'),
+          fullHourFormatted: format(new Date().setHours(hour), 'HH:00'),
+          halfHourFormatted: format(new Date().setHours(hour), 'HH:30'),
         };
       });
   }, [availability]);
 
   const handleCreateAppointment = useCallback(async () => {
     try {
-      const date = new Date(selectedDate);
+      if (selectedHair === 'Cabelo') {
+        await api.post('appointments', {
+          provider_id: selectedProvider.toString(),
+          date: dateHair,
+          type: selectedHair,
+        });
 
-      date.setHours(selectedHour);
-      date.setMinutes(0);
+        addToast({
+          type: 'success',
+          title: 'Agendamento criado.',
+          description: 'Agendamento criado com sucesso!',
+        });
+      }
 
-      await api.post('appointments', {
-        provider_id: selectedProvider.toString(),
-        date,
-      });
+      if (selectedBeard === 'Barba') {
+        await api.post('appointments', {
+          provider_id: selectedProvider.toString(),
+          date: dateBeard,
+          type: selectedBeard,
+        });
 
-      addToast({
-        type: 'success',
-        title: 'Agendamento criado.',
-        description: 'Agendamento criado com sucesso!',
-      });
-
-      setTimeout(() => window.location.reload(true), 1500);
+        addToast({
+          type: 'success',
+          title: 'Agendamento criado.',
+          description: 'Agendamento criado com sucesso!',
+        });
+      }
     } catch (err) {
       addToast({
         type: 'error',
@@ -186,7 +297,14 @@ const User: React.FC = () => {
           'Ocorreu algum erro ao criar o agendamento, tente novamente',
       });
     }
-  }, [selectedDate, selectedHour, selectedProvider, addToast]);
+  }, [
+    addToast,
+    dateHair,
+    dateBeard,
+    selectedHair,
+    selectedBeard,
+    selectedProvider,
+  ]);
 
   const settings: Settings = {
     dots: true,
@@ -251,47 +369,180 @@ const User: React.FC = () => {
             </Slider>
           </ContentSlider>
 
-          <h1>Horários disponíveis</h1>
-          <Section>
-            <strong>Manhã</strong>
-            {morningAvailability.map(({ hourFormatted, available, hour }) => (
-              <HourButton
-                enabled={available}
-                selected={selectedHour === hour}
-                available={available}
-                key={hourFormatted}
-                onClick={() => handleSelectHour(hour)}
-              >
-                <HourText selected={selectedHour === hour}>
-                  {hourFormatted}{' '}
-                </HourText>
-              </HourButton>
-            ))}
-          </Section>
+          <ContentCreateAppointment>
+            <TypeTitle>
+              Serviços e horários
+              <h2>Selecione o serviço desejado e posteriormente o horário.</h2>
+            </TypeTitle>
+            <Section>
+              <SectionHair>
+                <TypeButton
+                  selectedHair={selectedHair === 'Cabelo'}
+                  onClick={handleSelectHair}
+                >
+                  <TypeText>Cabelo</TypeText>
+                </TypeButton>
 
-          <Section>
-            <strong>Tarde</strong>
-            {afternoonAvailability.map(({ hourFormatted, available, hour }) => (
-              <HourButton
-                enabled={available}
-                selected={selectedHour === hour}
-                available={available}
-                key={hourFormatted}
-                onClick={() => handleSelectHour(hour)}
-              >
-                <HourText selected={selectedHour === hour}>
-                  {hourFormatted}{' '}
-                </HourText>
-              </HourButton>
-            ))}
-          </Section>
+                <strong>Manhã</strong>
+                {morningAvailability.map(
+                  ({ fullHourFormatted, halfHourFormatted, available }) => (
+                    <ContentMorning>
+                      <HourButton
+                        enabled={available}
+                        selectedHair={selectedHairHour === fullHourFormatted}
+                        available={available}
+                        key={fullHourFormatted}
+                        onClick={() =>
+                          handleSelectHairHour(fullHourFormatted, available)
+                        }
+                      >
+                        <HourText>{fullHourFormatted} </HourText>
+                      </HourButton>
 
-          <CreateButton
-            style={{ marginTop: 50 }}
-            onClick={handleCreateAppointment}
-          >
-            Criar agendamento
-          </CreateButton>
+                      <HourButton
+                        enabled={available}
+                        selectedHair={selectedHairHour === halfHourFormatted}
+                        available={available}
+                        key={halfHourFormatted}
+                        onClick={() =>
+                          handleSelectHairHour(halfHourFormatted, available)
+                        }
+                      >
+                        <HourText>{halfHourFormatted} </HourText>
+                      </HourButton>
+                    </ContentMorning>
+                  ),
+                )}
+
+                <strong>Tarde</strong>
+                {afternoonAvailability.map(
+                  ({ fullHourFormatted, halfHourFormatted, available }) => (
+                    <ContentAfternoon>
+                      <HourButton
+                        enabled={available}
+                        selectedHair={selectedHairHour === fullHourFormatted}
+                        available={available}
+                        key={fullHourFormatted}
+                        onClick={() =>
+                          handleSelectHairHour(fullHourFormatted, available)
+                        }
+                      >
+                        <HourText>{fullHourFormatted} </HourText>
+                      </HourButton>
+
+                      <HourButton
+                        enabled={available}
+                        selectedHair={selectedHairHour === halfHourFormatted}
+                        available={available}
+                        key={halfHourFormatted}
+                        onClick={() =>
+                          handleSelectHairHour(halfHourFormatted, available)
+                        }
+                      >
+                        <HourText>{halfHourFormatted} </HourText>
+                      </HourButton>
+                    </ContentAfternoon>
+                  ),
+                )}
+              </SectionHair>
+
+              <SectionBeard>
+                <TypeButton
+                  selectedBeard={selectedBeard === 'Barba'}
+                  onClick={handleSelectBeard}
+                >
+                  <TypeText selected={selectedBeard === 'Barba'}>
+                    Barba
+                  </TypeText>
+                </TypeButton>
+
+                <strong>Manhã</strong>
+                {morningAvailability.map(
+                  ({ fullHourFormatted, halfHourFormatted, available }) => (
+                    <ContentMorning>
+                      <HourButton
+                        enabled={available}
+                        selectedBeard={selectedBeardHour === fullHourFormatted}
+                        available={available}
+                        key={fullHourFormatted}
+                        onClick={() =>
+                          handleSelectBeardHour(fullHourFormatted, available)
+                        }
+                      >
+                        <HourText
+                          selected={selectedBeardHour === fullHourFormatted}
+                        >
+                          {fullHourFormatted}{' '}
+                        </HourText>
+                      </HourButton>
+
+                      <HourButton
+                        enabled={available}
+                        selectedBeard={selectedBeardHour === halfHourFormatted}
+                        available={available}
+                        key={halfHourFormatted}
+                        onClick={() =>
+                          handleSelectBeardHour(halfHourFormatted, available)
+                        }
+                      >
+                        <HourText
+                          selected={selectedBeardHour === halfHourFormatted}
+                        >
+                          {halfHourFormatted}{' '}
+                        </HourText>
+                      </HourButton>
+                    </ContentMorning>
+                  ),
+                )}
+
+                <strong>Tarde</strong>
+                {afternoonAvailability.map(
+                  ({ fullHourFormatted, halfHourFormatted, available }) => (
+                    <ContentAfternoon>
+                      <HourButton
+                        enabled={available}
+                        selectedBeard={selectedBeardHour === fullHourFormatted}
+                        available={available}
+                        key={fullHourFormatted}
+                        onClick={() =>
+                          handleSelectBeardHour(fullHourFormatted, available)
+                        }
+                      >
+                        <HourText
+                          selected={selectedBeardHour === fullHourFormatted}
+                        >
+                          {fullHourFormatted}{' '}
+                        </HourText>
+                      </HourButton>
+
+                      <HourButton
+                        enabled={available}
+                        selectedBeard={selectedBeardHour === halfHourFormatted}
+                        available={available}
+                        key={halfHourFormatted}
+                        onClick={() =>
+                          handleSelectBeardHour(halfHourFormatted, available)
+                        }
+                      >
+                        <HourText
+                          selected={selectedBeardHour === halfHourFormatted}
+                        >
+                          {halfHourFormatted}{' '}
+                        </HourText>
+                      </HourButton>
+                    </ContentAfternoon>
+                  ),
+                )}
+              </SectionBeard>
+            </Section>
+
+            <CreateButton
+              style={{ marginTop: 50 }}
+              onClick={handleCreateAppointment}
+            >
+              Criar agendamento
+            </CreateButton>
+          </ContentCreateAppointment>
         </Schedule>
         <Calendar>
           <DayPicker

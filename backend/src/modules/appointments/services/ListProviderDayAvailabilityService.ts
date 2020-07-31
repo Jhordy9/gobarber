@@ -11,8 +11,7 @@ interface IRequest {
 }
 
 type IResponse = Array<{
-  fullHour: number;
-  halfHour: number;
+  hour: number;
   available: boolean;
 }>;
 
@@ -57,8 +56,7 @@ class ListProviderDayAvailabilityService {
       const compareDate = new Date(year, month - 1, day, hour);
 
       return {
-        fullHour: hour,
-        halfHour: hour,
+        hour,
         available: !hasAppointmentInHour && isAfter(compareDate, currentDate),
       };
     });
