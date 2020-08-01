@@ -6,15 +6,11 @@ import { format, isFuture } from 'date-fns';
 import Slider, { Settings } from 'react-slick';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
-import { useHistory } from 'react-router-dom';
 
-import ComponentHeader from '../../Header';
-import { useToast } from '../../../hooks/toast';
+import { useToast } from '../../hooks/toast';
 
 import {
   Container,
-  Content,
-  Schedule,
   ContentSlider,
   Provider,
   ContentCreateAppointment,
@@ -31,8 +27,8 @@ import {
   CreateButton,
   Calendar,
 } from './styles';
-import { useAuth } from '../../../hooks/auth';
-import api from '../../../services/api';
+import { useAuth } from '../../hooks/auth';
+import api from '../../services/api';
 
 interface MonthAvailabilityItem {
   day: number;
@@ -69,7 +65,6 @@ const User: React.FC = () => {
 
   const { user } = useAuth();
   const { addToast } = useToast();
-  const history = useHistory();
 
   const handleMonthChange = useCallback((month: Date) => {
     setCurrentMonth(month);
@@ -433,232 +428,219 @@ const User: React.FC = () => {
 
   return (
     <Container>
-      <ComponentHeader />
-
-      <Content>
-        <Schedule>
-          <h1>Barbeiros</h1>
-
-          <span>
-            Selecione um barbeiro para verificar os horários disponíveis.
-          </span>
-
-          <ContentSlider>
-            <Slider {...settings}>
-              {providers.map((dt) => (
-                <Provider
-                  key={dt.id}
-                  onClick={() => handleSelectedProvider(dt.id)}
-                  selected={selectedProvider.indexOf(dt.id) >= 0}
-                >
-                  <img src={dt.avatar_url} alt={dt.name} />
-                  <strong>{dt.name}</strong>
-                </Provider>
-              ))}
-            </Slider>
-          </ContentSlider>
-
-          <ContentCreateAppointment>
-            <TypeTitle>
-              Serviços e horários
-              <h2>Selecione o serviço desejado e posteriormente o horário.</h2>
-            </TypeTitle>
-            <Section>
-              <SectionHair>
-                <TypeButton
-                  selectedHair={selectedHair === 'Cabelo'}
-                  onClick={handleSelectHair}
-                >
-                  <TypeText>Cabelo</TypeText>
-                </TypeButton>
-
-                <strong>Manhã</strong>
-                {morningAvailability.map(
-                  ({ fullHourFormatted, halfHourFormatted, available }) => (
-                    <ContentMorning>
-                      <HourButton
-                        enabled={available}
-                        selectedHair={selectedHairHour === fullHourFormatted}
-                        available={available}
-                        key={fullHourFormatted}
-                        onClick={() =>
-                          handleSelectHairHour(fullHourFormatted, available)
-                        }
-                      >
-                        <HourText>{fullHourFormatted} </HourText>
-                      </HourButton>
-
-                      <HourButton
-                        enabled={available}
-                        selectedHair={selectedHairHour === halfHourFormatted}
-                        available={available}
-                        key={halfHourFormatted}
-                        onClick={() =>
-                          handleSelectHairHour(halfHourFormatted, available)
-                        }
-                      >
-                        <HourText>{halfHourFormatted} </HourText>
-                      </HourButton>
-                    </ContentMorning>
-                  ),
-                )}
-
-                <strong>Tarde</strong>
-                {afternoonAvailability.map(
-                  ({ fullHourFormatted, halfHourFormatted, available }) => (
-                    <ContentAfternoon>
-                      <HourButton
-                        enabled={available}
-                        selectedHair={selectedHairHour === fullHourFormatted}
-                        available={available}
-                        key={fullHourFormatted}
-                        onClick={() =>
-                          handleSelectHairHour(fullHourFormatted, available)
-                        }
-                      >
-                        <HourText>{fullHourFormatted} </HourText>
-                      </HourButton>
-
-                      <HourButton
-                        enabled={available}
-                        selectedHair={selectedHairHour === halfHourFormatted}
-                        available={available}
-                        key={halfHourFormatted}
-                        onClick={() =>
-                          handleSelectHairHour(halfHourFormatted, available)
-                        }
-                      >
-                        <HourText>{halfHourFormatted} </HourText>
-                      </HourButton>
-                    </ContentAfternoon>
-                  ),
-                )}
-              </SectionHair>
-
-              <SectionBeard>
-                <TypeButton
-                  selectedBeard={selectedBeard === 'Barba'}
-                  onClick={handleSelectBeard}
-                >
-                  <TypeText selected={selectedBeard === 'Barba'}>
-                    Barba
-                  </TypeText>
-                </TypeButton>
-
-                <strong>Manhã</strong>
-                {morningAvailability.map(
-                  ({ fullHourFormatted, halfHourFormatted, available }) => (
-                    <ContentMorning>
-                      <HourButton
-                        enabled={available}
-                        selectedBeard={selectedBeardHour === fullHourFormatted}
-                        available={available}
-                        key={fullHourFormatted}
-                        onClick={() =>
-                          handleSelectBeardHour(fullHourFormatted, available)
-                        }
-                      >
-                        <HourText
-                          selected={selectedBeardHour === fullHourFormatted}
-                        >
-                          {fullHourFormatted}{' '}
-                        </HourText>
-                      </HourButton>
-
-                      <HourButton
-                        enabled={available}
-                        selectedBeard={selectedBeardHour === halfHourFormatted}
-                        available={available}
-                        key={halfHourFormatted}
-                        onClick={() =>
-                          handleSelectBeardHour(halfHourFormatted, available)
-                        }
-                      >
-                        <HourText
-                          selected={selectedBeardHour === halfHourFormatted}
-                        >
-                          {halfHourFormatted}{' '}
-                        </HourText>
-                      </HourButton>
-                    </ContentMorning>
-                  ),
-                )}
-
-                <strong>Tarde</strong>
-                {afternoonAvailability.map(
-                  ({ fullHourFormatted, halfHourFormatted, available }) => (
-                    <ContentAfternoon>
-                      <HourButton
-                        enabled={available}
-                        selectedBeard={selectedBeardHour === fullHourFormatted}
-                        available={available}
-                        key={fullHourFormatted}
-                        onClick={() =>
-                          handleSelectBeardHour(fullHourFormatted, available)
-                        }
-                      >
-                        <HourText
-                          selected={selectedBeardHour === fullHourFormatted}
-                        >
-                          {fullHourFormatted}{' '}
-                        </HourText>
-                      </HourButton>
-
-                      <HourButton
-                        enabled={available}
-                        selectedBeard={selectedBeardHour === halfHourFormatted}
-                        available={available}
-                        key={halfHourFormatted}
-                        onClick={() =>
-                          handleSelectBeardHour(halfHourFormatted, available)
-                        }
-                      >
-                        <HourText
-                          selected={selectedBeardHour === halfHourFormatted}
-                        >
-                          {halfHourFormatted}{' '}
-                        </HourText>
-                      </HourButton>
-                    </ContentAfternoon>
-                  ),
-                )}
-              </SectionBeard>
-            </Section>
-
-            <CreateButton
-              style={{ marginTop: 50 }}
-              onClick={handleCreateAppointment}
+      <ContentSlider>
+        <Slider {...settings}>
+          {providers.map((dt) => (
+            <Provider
+              key={dt.id}
+              onClick={() => handleSelectedProvider(dt.id)}
+              selected={selectedProvider.indexOf(dt.id) >= 0}
             >
-              Criar agendamento
-            </CreateButton>
-          </ContentCreateAppointment>
-        </Schedule>
-        <Calendar>
-          <DayPicker
-            weekdaysShort={['D', 'S', 'T', 'Q', 'Q', 'S', 'S']}
-            fromMonth={new Date()}
-            disabledDays={[{ daysOfWeek: [0, 6] }, ...disableDays]}
-            modifiers={{ available: { daysOfWeek: [1, 2, 3, 4, 5] } }}
-            onMonthChange={handleMonthChange}
-            selectedDays={selectedDate}
-            onDayClick={handleDateChange}
-            months={[
-              'Janeiro',
-              'Fevereiro',
-              'Março',
-              'Abril',
-              'Maio',
-              'Junho',
-              'Julho',
-              'Agosto',
-              'Setembro',
-              'Outubro',
-              'Novembro',
-              'Dezembro',
-            ]}
-          />
-        </Calendar>
-      </Content>
+              <img src={dt.avatar_url} alt={dt.name} />
+              <strong>{dt.name}</strong>
+            </Provider>
+          ))}
+        </Slider>
+      </ContentSlider>
+
+      <ContentCreateAppointment>
+        <TypeTitle>
+          Serviços e horários
+          <h2>Selecione o serviço desejado e posteriormente o horário.</h2>
+        </TypeTitle>
+        <Section>
+          <SectionHair>
+            <TypeButton
+              selectedHair={selectedHair === 'Cabelo'}
+              onClick={handleSelectHair}
+            >
+              <TypeText>Cabelo</TypeText>
+            </TypeButton>
+
+            <strong>Manhã</strong>
+            {morningAvailability.map(
+              ({ fullHourFormatted, halfHourFormatted, available }) => (
+                <ContentMorning>
+                  <HourButton
+                    enabled={available}
+                    selectedHair={selectedHairHour === fullHourFormatted}
+                    available={available}
+                    key={fullHourFormatted}
+                    onClick={() =>
+                      handleSelectHairHour(fullHourFormatted, available)
+                    }
+                  >
+                    <HourText>{fullHourFormatted} </HourText>
+                  </HourButton>
+
+                  <HourButton
+                    enabled={available}
+                    selectedHair={selectedHairHour === halfHourFormatted}
+                    available={available}
+                    key={halfHourFormatted}
+                    onClick={() =>
+                      handleSelectHairHour(halfHourFormatted, available)
+                    }
+                  >
+                    <HourText>{halfHourFormatted} </HourText>
+                  </HourButton>
+                </ContentMorning>
+              ),
+            )}
+
+            <strong>Tarde</strong>
+            {afternoonAvailability.map(
+              ({ fullHourFormatted, halfHourFormatted, available }) => (
+                <ContentAfternoon>
+                  <HourButton
+                    enabled={available}
+                    selectedHair={selectedHairHour === fullHourFormatted}
+                    available={available}
+                    key={fullHourFormatted}
+                    onClick={() =>
+                      handleSelectHairHour(fullHourFormatted, available)
+                    }
+                  >
+                    <HourText>{fullHourFormatted} </HourText>
+                  </HourButton>
+
+                  <HourButton
+                    enabled={available}
+                    selectedHair={selectedHairHour === halfHourFormatted}
+                    available={available}
+                    key={halfHourFormatted}
+                    onClick={() =>
+                      handleSelectHairHour(halfHourFormatted, available)
+                    }
+                  >
+                    <HourText>{halfHourFormatted} </HourText>
+                  </HourButton>
+                </ContentAfternoon>
+              ),
+            )}
+          </SectionHair>
+
+          <SectionBeard>
+            <TypeButton
+              selectedBeard={selectedBeard === 'Barba'}
+              onClick={handleSelectBeard}
+            >
+              <TypeText selected={selectedBeard === 'Barba'}>Barba</TypeText>
+            </TypeButton>
+
+            <strong>Manhã</strong>
+            {morningAvailability.map(
+              ({ fullHourFormatted, halfHourFormatted, available }) => (
+                <ContentMorning>
+                  <HourButton
+                    enabled={available}
+                    selectedBeard={selectedBeardHour === fullHourFormatted}
+                    available={available}
+                    key={fullHourFormatted}
+                    onClick={() =>
+                      handleSelectBeardHour(fullHourFormatted, available)
+                    }
+                  >
+                    <HourText
+                      selected={selectedBeardHour === fullHourFormatted}
+                    >
+                      {fullHourFormatted}{' '}
+                    </HourText>
+                  </HourButton>
+
+                  <HourButton
+                    enabled={available}
+                    selectedBeard={selectedBeardHour === halfHourFormatted}
+                    available={available}
+                    key={halfHourFormatted}
+                    onClick={() =>
+                      handleSelectBeardHour(halfHourFormatted, available)
+                    }
+                  >
+                    <HourText
+                      selected={selectedBeardHour === halfHourFormatted}
+                    >
+                      {halfHourFormatted}{' '}
+                    </HourText>
+                  </HourButton>
+                </ContentMorning>
+              ),
+            )}
+
+            <strong>Tarde</strong>
+            {afternoonAvailability.map(
+              ({ fullHourFormatted, halfHourFormatted, available }) => (
+                <ContentAfternoon>
+                  <HourButton
+                    enabled={available}
+                    selectedBeard={selectedBeardHour === fullHourFormatted}
+                    available={available}
+                    key={fullHourFormatted}
+                    onClick={() =>
+                      handleSelectBeardHour(fullHourFormatted, available)
+                    }
+                  >
+                    <HourText
+                      selected={selectedBeardHour === fullHourFormatted}
+                    >
+                      {fullHourFormatted}{' '}
+                    </HourText>
+                  </HourButton>
+
+                  <HourButton
+                    enabled={available}
+                    selectedBeard={selectedBeardHour === halfHourFormatted}
+                    available={available}
+                    key={halfHourFormatted}
+                    onClick={() =>
+                      handleSelectBeardHour(halfHourFormatted, available)
+                    }
+                  >
+                    <HourText
+                      selected={selectedBeardHour === halfHourFormatted}
+                    >
+                      {halfHourFormatted}{' '}
+                    </HourText>
+                  </HourButton>
+                </ContentAfternoon>
+              ),
+            )}
+          </SectionBeard>
+        </Section>
+
+        <CreateButton
+          style={{ marginTop: 50 }}
+          onClick={handleCreateAppointment}
+        >
+          Criar agendamento
+        </CreateButton>
+      </ContentCreateAppointment>
+
+      <Calendar>
+        <DayPicker
+          weekdaysShort={['D', 'S', 'T', 'Q', 'Q', 'S', 'S']}
+          fromMonth={new Date()}
+          disabledDays={[{ daysOfWeek: [0, 6] }, ...disableDays]}
+          modifiers={{ available: { daysOfWeek: [1, 2, 3, 4, 5] } }}
+          onMonthChange={handleMonthChange}
+          selectedDays={selectedDate}
+          onDayClick={handleDateChange}
+          months={[
+            'Janeiro',
+            'Fevereiro',
+            'Março',
+            'Abril',
+            'Maio',
+            'Junho',
+            'Julho',
+            'Agosto',
+            'Setembro',
+            'Outubro',
+            'Novembro',
+            'Dezembro',
+          ]}
+        />
+      </Calendar>
     </Container>
   );
 };
