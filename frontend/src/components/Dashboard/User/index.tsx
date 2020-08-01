@@ -2,11 +2,13 @@
 import React, { useState, useCallback, useEffect, useMemo } from 'react';
 import DayPicker, { DayModifiers } from 'react-day-picker';
 
-import { format } from 'date-fns';
+import { format, isFuture } from 'date-fns';
 import Slider, { Settings } from 'react-slick';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
+import { useHistory } from 'react-router-dom';
 
+import { parseISO } from 'date-fns/esm';
 import ComponentHeader from '../../Header';
 import { useToast } from '../../../hooks/toast';
 
@@ -68,6 +70,7 @@ const User: React.FC = () => {
 
   const { user } = useAuth();
   const { addToast } = useToast();
+  const history = useHistory();
 
   const handleMonthChange = useCallback((month: Date) => {
     setCurrentMonth(month);
@@ -207,6 +210,8 @@ const User: React.FC = () => {
       date.setMinutes(30);
 
       setDateHair(date);
+    } else if (selectedHairHour === '50') {
+      setDateHair(new Date());
     }
 
     if (halfBeardHour === '00') {
@@ -219,6 +224,8 @@ const User: React.FC = () => {
       date.setMinutes(30);
 
       setDateBeard(date);
+    } else if (selectedBeardHour === '50') {
+      setDateBeard(new Date());
     }
   }, [selectedDate, selectedHairHour, selectedBeardHour]);
 
@@ -260,43 +267,118 @@ const User: React.FC = () => {
       });
   }, [availability]);
 
-  const handleCreateAppointment = useCallback(async () => {
-    try {
-      if (selectedHair === 'Cabelo') {
-        await api.post('appointments', {
-          provider_id: selectedProvider.toString(),
-          date: dateHair,
-          type: selectedHair,
-        });
+  const handleCreateAppointment = useCallback(() => {
+    async function createHairAppointment(type: string): Promise<void> {
+      await api.post('appointments', {
+        provider_id: selectedProvider.toString(),
+        date: dateHair,
+        type,
+      });
+    }
+
+    async function createBeardAppointment(type: string): Promise<void> {
+      await api.post('appointments', {
+        provider_id: selectedProvider.toString(),
+        date: dateBeard,
+        type,
+      });
+    }
+
+    if (selectedHair === 'Cabelo') {
+      if (selectedHair === 'Cabelo' && isFuture(dateHair)) {
+        createHairAppointment(selectedHair);
 
         addToast({
           type: 'success',
           title: 'Agendamento criado.',
           description: 'Agendamento criado com sucesso!',
         });
-      }
-
-      if (selectedBeard === 'Barba') {
-        await api.post('appointments', {
-          provider_id: selectedProvider.toString(),
-          date: dateBeard,
-          type: selectedBeard,
-        });
-
+      } else if (!isFuture(dateHair)) {
         addToast({
-          type: 'success',
-          title: 'Agendamento criado.',
-          description: 'Agendamento criado com sucesso!',
+          type: 'error',
+          title: 'Erro na criação do agendamento',
+          description: 'Selecione o serviço/horário',
         });
       }
-    } catch (err) {
+    } else if (isFuture(dateHair)) {
       addToast({
         type: 'error',
         title: 'Erro na criação do agendamento',
-        description:
-          'Ocorreu algum erro ao criar o agendamento, tente novamente',
+        description: 'Selecione o serviço/horário',
       });
     }
+
+    if (selectedBeard === 'Barba') {
+      if (selectedBeard === 'Barba' && isFuture(dateBeard)) {
+        createBeardAppointment(selectedBeard);
+
+        addToast({
+          type: 'success',
+          title: 'Agendamento criado.',
+          description: 'Agendamento criado com sucesso!',
+        });
+      } else if (!isFuture(dateBeard)) {
+        addToast({
+          type: 'error',
+          title: 'Erro na criação do agendamento',
+          description: 'Selecione o serviço/horário',
+        });
+      }
+    } else if (isFuture(dateBeard)) {
+      addToast({
+        type: 'error',
+        title: 'Erro na criação do agendamento',
+        description: 'Selecione o serviço/horário',
+      });
+    }
+
+    if (selectedBeard === 'Barba' && selectedHair === 'Cabelo') {
+      if (selectedBeard === 'Barba' && isFuture(dateBeard)) {
+        createBeardAppointment(selectedBeard);
+
+        addToast({
+          type: 'success',
+          title: 'Agendamento criado.',
+          description: 'Agendamento criado com sucesso!',
+        });
+      } else if (!isFuture(dateBeard)) {
+        addToast({
+          type: 'error',
+          title: 'Erro na criação do agendamento',
+          description: 'Selecione o serviço/horário',
+        });
+      }
+    } else if (isFuture(dateBeard)) {
+      addToast({
+        type: 'error',
+        title: 'Erro na criação do agendamento',
+        description: 'Selecione o serviço/horário',
+      });
+
+      if (selectedHair === 'Cabelo' && isFuture(dateHair)) {
+        createHairAppointment(selectedHair);
+
+        addToast({
+          type: 'success',
+          title: 'Agendamento criado.',
+          description: 'Agendamento criado com sucesso!',
+        });
+      } else if (!isFuture(dateHair)) {
+        addToast({
+          type: 'error',
+          title: 'Erro na criação do agendamento',
+          description: 'Selecione o serviço/horário',
+        });
+      }
+    } else if (isFuture(dateHair)) {
+      addToast({
+        type: 'error',
+        title: 'Erro na criação do agendamento',
+        description: 'Selecione o serviço/horário',
+      });
+    }
+
+    history.push('/dashboard');
   }, [
     addToast,
     dateHair,
@@ -304,6 +386,7 @@ const User: React.FC = () => {
     selectedHair,
     selectedBeard,
     selectedProvider,
+    history,
   ]);
 
   const settings: Settings = {
