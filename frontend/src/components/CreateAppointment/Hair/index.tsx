@@ -4,22 +4,7 @@ import React, { useState, useCallback, useEffect, useMemo } from 'react';
 import { format } from 'date-fns';
 import { useRecoilValue, useRecoilState } from 'recoil';
 
-import {
-  Container,
-  ContentCreateAppointment,
-  TypeButton,
-  TypeText,
-  Section,
-  SectionBeard,
-  ContentMorning,
-  ContentAfternoon,
-  HourButton,
-  HourText,
-  CreateButton,
-} from './styles';
-
 import { useToast } from '../../../hooks/toast';
-import api from '../../../services/api';
 import {
   selectedProviderState,
   selectedDateState,
@@ -28,70 +13,84 @@ import {
   selectedHairHourState,
 } from '../../../atoms/index';
 
-const Beard: React.FC = () => {
+import {
+  Container,
+  ContentCreateAppointment,
+  TypeButton,
+  TypeText,
+  Section,
+  SectionHair,
+  ContentMorning,
+  ContentAfternoon,
+  HourButton,
+  HourText,
+  CreateButton,
+} from './styles';
+import api from '../../../services/api';
+
+const Hair: React.FC = () => {
   const selectedProvider = useRecoilValue(selectedProviderState);
   const selectedDate = useRecoilValue(selectedDateState);
   const availability = useRecoilValue(availabilityState);
   const selectedHairHour = useRecoilValue(selectedHairHourState);
   const selectedBeardHour = useRecoilValue(selectedBeardHourState);
 
-  const [editSelectedBeardHour, setEditSelectedBeardHour] = useRecoilState(
-    selectedBeardHourState,
+  const [editSelectedHairHour, setEditSelectedHairHour] = useRecoilState(
+    selectedHairHourState,
   );
-
-  const [selectedBeard, setSelectedBeard] = useState('');
-  const [dateBeard, setDateBeard] = useState(new Date());
+  const [selectedHair, setSelectedHair] = useState('');
+  const [dateHair, setDateHair] = useState(new Date());
 
   const { addToast } = useToast();
 
-  const handleSelectBeardHour = useCallback(
+  const handleSelectHairHour = useCallback(
     (hour: any, available: boolean) => {
       const thirtyHourPAR = hour.slice(3);
 
-      if (available === true && hour !== selectedHairHour) {
+      if (available === true && hour !== selectedBeardHour) {
         if (thirtyHourPAR === '00' || thirtyHourPAR === '30') {
-          setEditSelectedBeardHour(hour);
+          setEditSelectedHairHour(hour);
         }
 
-        if (hour === selectedBeardHour) {
-          setEditSelectedBeardHour('50');
+        if (hour === selectedHairHour) {
+          setEditSelectedHairHour('50');
         }
       }
     },
-    [selectedBeardHour, setEditSelectedBeardHour, selectedHairHour],
+    [selectedHairHour, setEditSelectedHairHour, selectedBeardHour],
   );
 
-  const handleSelectBeard = useCallback(() => {
-    if (selectedBeard === '') {
-      setSelectedBeard('Barba');
-    } else if (selectedBeard === 'Barba') {
-      setSelectedBeard('');
+  const handleSelectHair = useCallback(() => {
+    if (selectedHair === '') {
+      setSelectedHair('Cabelo');
+    } else if (selectedHair === 'Cabelo') {
+      setSelectedHair('');
     }
-  }, [selectedBeard]);
+  }, [selectedHair]);
 
   useEffect(() => {
     const date = new Date(selectedDate);
 
-    const arrayBeard = [];
-    arrayBeard.push(selectedBeardHour);
+    const arrayHair = [];
+    arrayHair.push(selectedHairHour);
 
-    const fullBeardHour: any = arrayBeard.toString().slice(0, 2);
-    const halfBeardHour: any = arrayBeard.toString().slice(3);
+    const fullHairHour: any = arrayHair.toString().slice(0, 2);
+    const halfHairHour: any = arrayHair.toString().slice(3);
 
-    if (halfBeardHour === '00') {
-      date.setHours(fullBeardHour);
+    if (halfHairHour === '00') {
+      date.setHours(fullHairHour);
       date.setMinutes(0);
 
-      setDateBeard(date);
-    } else if (halfBeardHour === '30') {
-      date.setHours(fullBeardHour);
+      setDateHair(date);
+    } else if (halfHairHour === '30') {
+      date.setHours(fullHairHour);
       date.setMinutes(30);
 
-      setDateBeard(date);
-    } else if (selectedBeardHour === '50') {
-      setDateBeard(new Date());
+      setDateHair(date);
+    } else if (selectedHairHour === '50') {
+      setDateHair(new Date());
     }
-  }, [selectedDate, selectedBeardHour]);
+  }, [selectedDate, selectedHairHour]);
 
   const morningAvailability = useMemo(() => {
     return availability
@@ -123,8 +122,8 @@ const Beard: React.FC = () => {
     try {
       await api.post('appointments', {
         provider_id: selectedProvider.toString(),
-        date: dateBeard,
-        type: selectedBeard,
+        date: dateHair,
+        type: selectedHair,
       });
 
       addToast({
@@ -139,18 +138,18 @@ const Beard: React.FC = () => {
         description: 'Selecione o serviço/horário',
       });
     }
-  }, [addToast, dateBeard, selectedBeard, selectedProvider]);
+  }, [addToast, dateHair, selectedHair, selectedProvider]);
 
   return (
     <Container>
       <ContentCreateAppointment>
         <Section>
-          <SectionBeard>
+          <SectionHair>
             <TypeButton
-              selectedBeard={selectedBeard === 'Barba'}
-              onClick={handleSelectBeard}
+              selectedHair={selectedHair === 'Cabelo'}
+              onClick={handleSelectHair}
             >
-              <TypeText selected={selectedBeard === 'Barba'}>Barba</TypeText>
+              <TypeText>Cabelo</TypeText>
             </TypeButton>
 
             <strong>Manhã</strong>
@@ -160,34 +159,26 @@ const Beard: React.FC = () => {
                   <HourButton
                     style={{ marginLeft: 16 }}
                     enabled={available}
-                    selectedBeard={selectedBeardHour === fullHourFormatted}
+                    selectedHair={selectedHairHour === fullHourFormatted}
                     available={available}
                     key={fullHourFormatted}
                     onClick={() =>
-                      handleSelectBeardHour(fullHourFormatted, available)
+                      handleSelectHairHour(fullHourFormatted, available)
                     }
                   >
-                    <HourText
-                      selected={selectedBeardHour === fullHourFormatted}
-                    >
-                      {fullHourFormatted}{' '}
-                    </HourText>
+                    <HourText>{fullHourFormatted} </HourText>
                   </HourButton>
 
                   <HourButton
                     enabled={available}
-                    selectedBeard={selectedBeardHour === halfHourFormatted}
+                    selectedHair={selectedHairHour === halfHourFormatted}
                     available={available}
                     key={halfHourFormatted}
                     onClick={() =>
-                      handleSelectBeardHour(halfHourFormatted, available)
+                      handleSelectHairHour(halfHourFormatted, available)
                     }
                   >
-                    <HourText
-                      selected={selectedBeardHour === halfHourFormatted}
-                    >
-                      {halfHourFormatted}{' '}
-                    </HourText>
+                    <HourText>{halfHourFormatted} </HourText>
                   </HourButton>
                 </ContentMorning>
               ),
@@ -200,40 +191,33 @@ const Beard: React.FC = () => {
                   <HourButton
                     style={{ marginLeft: 16 }}
                     enabled={available}
-                    selectedBeard={selectedBeardHour === fullHourFormatted}
+                    selectedHair={selectedHairHour === fullHourFormatted}
                     available={available}
                     key={fullHourFormatted}
                     onClick={() =>
-                      handleSelectBeardHour(fullHourFormatted, available)
+                      handleSelectHairHour(fullHourFormatted, available)
                     }
                   >
-                    <HourText
-                      selected={selectedBeardHour === fullHourFormatted}
-                    >
-                      {fullHourFormatted}{' '}
-                    </HourText>
+                    <HourText>{fullHourFormatted} </HourText>
                   </HourButton>
 
                   <HourButton
                     enabled={available}
-                    selectedBeard={selectedBeardHour === halfHourFormatted}
+                    selectedHair={selectedHairHour === halfHourFormatted}
                     available={available}
                     key={halfHourFormatted}
                     onClick={() =>
-                      handleSelectBeardHour(halfHourFormatted, available)
+                      handleSelectHairHour(halfHourFormatted, available)
                     }
                   >
-                    <HourText
-                      selected={selectedBeardHour === halfHourFormatted}
-                    >
-                      {halfHourFormatted}{' '}
-                    </HourText>
+                    <HourText>{halfHourFormatted} </HourText>
                   </HourButton>
                 </ContentAfternoon>
               ),
             )}
-          </SectionBeard>
+          </SectionHair>
         </Section>
+
         <CreateButton
           style={{ marginTop: 50 }}
           onClick={handleCreateAppointment}
@@ -245,4 +229,4 @@ const Beard: React.FC = () => {
   );
 };
 
-export default Beard;
+export default Hair;
