@@ -13,9 +13,19 @@ interface DataProps {
 
 export const Container = styled.div``;
 
-export const SectionBeard = styled.div`
+export const SectionHair = styled.div`
   max-width: 560px;
   height: 100%;
+
+  > strong {
+    color: #999591;
+    font-size: 26px;
+    line-height: 26px;
+    border-bottom: 1px solid #3e3b47;
+    display: block;
+    padding-bottom: 16px;
+    margin: 48px 0 16px;
+  }
 `;
 
 export const ContentCreateAppointment = styled.section`
@@ -102,4 +112,10 @@ export const HourText = styled.text<DataProps>`
 
 export const CreateButton = styled(Button)`
   font-size: 22px;
+  background: #6600ff;
+  color: #f4ede8;
+
+  &:hover {
+    background: ${shade(0.2, '#6600ff')};
+  }
 `;
