@@ -1,16 +1,16 @@
 /* eslint-disable react/jsx-curly-newline */
-import React, { useState, useCallback, useEffect, useMemo } from 'react';
+import React, { useCallback, useEffect, useMemo } from 'react';
 
-import { format } from 'date-fns';
 import { useRecoilValue, useRecoilState } from 'recoil';
 
-import { useToast } from '../../../hooks/toast';
 import {
   selectedProviderState,
   selectedDateState,
   availabilityState,
   selectedBeardHourState,
   selectedHairHourState,
+  dateHairState,
+  selectedHairState,
 } from '../../../atoms/index';
 
 import {
@@ -24,9 +24,7 @@ import {
   ContentAfternoon,
   HourButton,
   HourText,
-  CreateButton,
 } from './styles';
-import api from '../../../services/api';
 
 const Hair: React.FC = () => {
   const selectedProvider = useRecoilValue(selectedProviderState);
@@ -34,14 +32,16 @@ const Hair: React.FC = () => {
   const availability = useRecoilValue(availabilityState);
   const selectedHairHour = useRecoilValue(selectedHairHourState);
   const selectedBeardHour = useRecoilValue(selectedBeardHourState);
+  const dateHair = useRecoilValue(dateHairState);
+  const selectedHair = useRecoilValue(selectedHairState);
 
   const [editSelectedHairHour, setEditSelectedHairHour] = useRecoilState(
     selectedHairHourState,
   );
-  const [selectedHair, setSelectedHair] = useState('');
-  const [dateHair, setDateHair] = useState(new Date());
-
-  const { addToast } = useToast();
+  const [editDateHair, setEditDateHair] = useRecoilState(dateHairState);
+  const [editSelectedHair, setEditSelectedHair] = useRecoilState(
+    selectedHairState,
+  );
 
   const handleSelectHairHour = useCallback(
     (hour: any, available: boolean) => {
@@ -62,11 +62,11 @@ const Hair: React.FC = () => {
 
   const handleSelectHair = useCallback(() => {
     if (selectedHair === '') {
-      setSelectedHair('Cabelo');
+      setEditSelectedHair('Cabelo');
     } else if (selectedHair === 'Cabelo') {
-      setSelectedHair('');
+      setEditSelectedHair('');
     }
-  }, [selectedHair]);
+  }, [selectedHair, setEditSelectedHair]);
 
   useEffect(() => {
     const date = new Date(selectedDate);
@@ -81,26 +81,26 @@ const Hair: React.FC = () => {
       date.setHours(fullHairHour);
       date.setMinutes(0);
 
-      setDateHair(date);
+      setEditDateHair(date);
     } else if (halfHairHour === '30') {
       date.setHours(fullHairHour);
       date.setMinutes(30);
 
-      setDateHair(date);
+      setEditDateHair(date);
     } else if (selectedHairHour === '50') {
-      setDateHair(new Date());
+      setEditDateHair(new Date());
     }
-  }, [selectedDate, selectedHairHour]);
+  }, [selectedDate, selectedHairHour, setEditDateHair]);
 
   const morningAvailability = useMemo(() => {
     return availability
       .filter(({ hour }) => hour < 12)
-      .map(({ hour, available }) => {
+      .map(({ fullHour, halfHour, fullHourAvailable, halfHourAvailable }) => {
         return {
-          hour,
-          available,
-          fullHourFormatted: format(new Date().setHours(hour), 'HH:00'),
-          halfHourFormatted: format(new Date().setHours(hour), 'HH:30'),
+          halfHourAvailable,
+          fullHourAvailable,
+          fullHourFormatted: fullHour,
+          halfHourFormatted: halfHour,
         };
       });
   }, [availability]);
@@ -108,37 +108,15 @@ const Hair: React.FC = () => {
   const afternoonAvailability = useMemo(() => {
     return availability
       .filter(({ hour }) => hour >= 12)
-      .map(({ hour, available }) => {
+      .map(({ fullHour, halfHour, fullHourAvailable, halfHourAvailable }) => {
         return {
-          hour,
-          available,
-          fullHourFormatted: format(new Date().setHours(hour), 'HH:00'),
-          halfHourFormatted: format(new Date().setHours(hour), 'HH:30'),
+          halfHourAvailable,
+          fullHourAvailable,
+          fullHourFormatted: fullHour,
+          halfHourFormatted: halfHour,
         };
       });
   }, [availability]);
-
-  const handleCreateAppointment = useCallback(async () => {
-    try {
-      await api.post('appointments', {
-        provider_id: selectedProvider.toString(),
-        date: dateHair,
-        type: selectedHair,
-      });
-
-      addToast({
-        type: 'success',
-        title: 'Agendamento criado.',
-        description: 'Serviço de barba agendadado com sucesso!',
-      });
-    } catch (err) {
-      addToast({
-        type: 'error',
-        title: 'Erro na criação do agendamento',
-        description: 'Selecione o serviço/horário',
-      });
-    }
-  }, [addToast, dateHair, selectedHair, selectedProvider]);
 
   return (
     <Container>
@@ -153,77 +131,94 @@ const Hair: React.FC = () => {
             </TypeButton>
 
             <strong>Manhã</strong>
-            {morningAvailability.map(
-              ({ fullHourFormatted, halfHourFormatted, available }) => (
-                <ContentMorning>
-                  <HourButton
-                    style={{ marginLeft: 16 }}
-                    enabled={available}
-                    selectedHair={selectedHairHour === fullHourFormatted}
-                    available={available}
-                    key={fullHourFormatted}
-                    onClick={() =>
-                      handleSelectHairHour(fullHourFormatted, available)
-                    }
-                  >
-                    <HourText>{fullHourFormatted} </HourText>
-                  </HourButton>
+            {selectedHair === 'Cabelo' &&
+              morningAvailability.map(
+                ({
+                  fullHourFormatted,
+                  halfHourFormatted,
+                  fullHourAvailable,
+                  halfHourAvailable,
+                }) => (
+                    <ContentMorning>
+                      <HourButton
+                        style={{ marginLeft: 16 }}
+                        enabled={fullHourAvailable}
+                        selectedHair={selectedHairHour === fullHourFormatted}
+                        available={fullHourAvailable}
+                        key={fullHourFormatted}
+                        onClick={() =>
+                          handleSelectHairHour(
+                            fullHourFormatted,
+                            fullHourAvailable,
+                          )
+                        }
+                      >
+                        <HourText>{fullHourFormatted} </HourText>
+                      </HourButton>
 
-                  <HourButton
-                    enabled={available}
-                    selectedHair={selectedHairHour === halfHourFormatted}
-                    available={available}
-                    key={halfHourFormatted}
-                    onClick={() =>
-                      handleSelectHairHour(halfHourFormatted, available)
-                    }
-                  >
-                    <HourText>{halfHourFormatted} </HourText>
-                  </HourButton>
-                </ContentMorning>
-              ),
-            )}
+                      <HourButton
+                        enabled={halfHourAvailable}
+                        selectedHair={selectedHairHour === halfHourFormatted}
+                        available={halfHourAvailable}
+                        key={halfHourFormatted}
+                        onClick={() =>
+                          handleSelectHairHour(
+                            halfHourFormatted,
+                            halfHourAvailable,
+                          )
+                        }
+                      >
+                        <HourText>{halfHourFormatted} </HourText>
+                      </HourButton>
+                    </ContentMorning>
+                  ),
+              )}
 
             <strong>Tarde</strong>
-            {afternoonAvailability.map(
-              ({ fullHourFormatted, halfHourFormatted, available }) => (
-                <ContentAfternoon>
-                  <HourButton
-                    style={{ marginLeft: 16 }}
-                    enabled={available}
-                    selectedHair={selectedHairHour === fullHourFormatted}
-                    available={available}
-                    key={fullHourFormatted}
-                    onClick={() =>
-                      handleSelectHairHour(fullHourFormatted, available)
-                    }
-                  >
-                    <HourText>{fullHourFormatted} </HourText>
-                  </HourButton>
+            {selectedHair === 'Cabelo' &&
+              afternoonAvailability.map(
+                ({
+                  fullHourFormatted,
+                  halfHourFormatted,
+                  fullHourAvailable,
+                  halfHourAvailable,
+                }) => (
+                    <ContentAfternoon>
+                      <HourButton
+                        style={{ marginLeft: 16 }}
+                        enabled={fullHourAvailable}
+                        selectedHair={selectedHairHour === fullHourFormatted}
+                        available={fullHourAvailable}
+                        key={fullHourFormatted}
+                        onClick={() =>
+                          handleSelectHairHour(
+                            fullHourFormatted,
+                            fullHourAvailable,
+                          )
+                        }
+                      >
+                        <HourText>{fullHourFormatted} </HourText>
+                      </HourButton>
 
-                  <HourButton
-                    enabled={available}
-                    selectedHair={selectedHairHour === halfHourFormatted}
-                    available={available}
-                    key={halfHourFormatted}
-                    onClick={() =>
-                      handleSelectHairHour(halfHourFormatted, available)
-                    }
-                  >
-                    <HourText>{halfHourFormatted} </HourText>
-                  </HourButton>
-                </ContentAfternoon>
-              ),
-            )}
+                      <HourButton
+                        enabled={halfHourAvailable}
+                        selectedHair={selectedHairHour === halfHourFormatted}
+                        available={halfHourAvailable}
+                        key={halfHourFormatted}
+                        onClick={() =>
+                          handleSelectHairHour(
+                            halfHourFormatted,
+                            halfHourAvailable,
+                          )
+                        }
+                      >
+                        <HourText>{halfHourFormatted} </HourText>
+                      </HourButton>
+                    </ContentAfternoon>
+                  ),
+              )}
           </SectionHair>
         </Section>
-
-        <CreateButton
-          style={{ marginTop: 50 }}
-          onClick={handleCreateAppointment}
-        >
-          Criar agendamento
-        </CreateButton>
       </ContentCreateAppointment>
     </Container>
   );
