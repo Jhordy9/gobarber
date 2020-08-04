@@ -1,7 +1,6 @@
 /* eslint-disable react/jsx-curly-newline */
-import React, { useState, useCallback, useEffect, useMemo } from 'react';
+import React, { useCallback, useEffect, useMemo } from 'react';
 
-import { format } from 'date-fns';
 import { useRecoilValue, useRecoilState } from 'recoil';
 
 import {
@@ -15,17 +14,16 @@ import {
   ContentAfternoon,
   HourButton,
   HourText,
-  CreateButton,
 } from './styles';
 
-import { useToast } from '../../../hooks/toast';
-import api from '../../../services/api';
 import {
   selectedProviderState,
   selectedDateState,
   availabilityState,
   selectedBeardHourState,
   selectedHairHourState,
+  dateBeardState,
+  selectedBeardState,
 } from '../../../atoms/index';
 
 const Beard: React.FC = () => {
@@ -34,15 +32,16 @@ const Beard: React.FC = () => {
   const availability = useRecoilValue(availabilityState);
   const selectedHairHour = useRecoilValue(selectedHairHourState);
   const selectedBeardHour = useRecoilValue(selectedBeardHourState);
+  const dateBeard = useRecoilValue(dateBeardState);
+  const selectedBeard = useRecoilValue(selectedBeardState);
 
   const [editSelectedBeardHour, setEditSelectedBeardHour] = useRecoilState(
     selectedBeardHourState,
   );
-
-  const [selectedBeard, setSelectedBeard] = useState('');
-  const [dateBeard, setDateBeard] = useState(new Date());
-
-  const { addToast } = useToast();
+  const [editDateBeard, setEditDateBeard] = useRecoilState(dateBeardState);
+  const [editSelectedBeard, setEditSelectedBeard] = useRecoilState(
+    selectedBeardState,
+  );
 
   const handleSelectBeardHour = useCallback(
     (hour: any, available: boolean) => {
@@ -63,11 +62,11 @@ const Beard: React.FC = () => {
 
   const handleSelectBeard = useCallback(() => {
     if (selectedBeard === '') {
-      setSelectedBeard('Barba');
+      setEditSelectedBeard('Barba');
     } else if (selectedBeard === 'Barba') {
-      setSelectedBeard('');
+      setEditSelectedBeard('');
     }
-  }, [selectedBeard]);
+  }, [selectedBeard, setEditSelectedBeard]);
 
   useEffect(() => {
     const date = new Date(selectedDate);
@@ -82,26 +81,26 @@ const Beard: React.FC = () => {
       date.setHours(fullBeardHour);
       date.setMinutes(0);
 
-      setDateBeard(date);
+      setEditDateBeard(date);
     } else if (halfBeardHour === '30') {
       date.setHours(fullBeardHour);
       date.setMinutes(30);
 
-      setDateBeard(date);
+      setEditDateBeard(date);
     } else if (selectedBeardHour === '50') {
-      setDateBeard(new Date());
+      setEditDateBeard(new Date());
     }
-  }, [selectedDate, selectedBeardHour]);
+  }, [selectedDate, selectedBeardHour, setEditDateBeard]);
 
   const morningAvailability = useMemo(() => {
     return availability
       .filter(({ hour }) => hour < 12)
-      .map(({ hour, available }) => {
+      .map(({ fullHour, halfHour, fullHourAvailable, halfHourAvailable }) => {
         return {
-          hour,
-          available,
-          fullHourFormatted: format(new Date().setHours(hour), 'HH:00'),
-          halfHourFormatted: format(new Date().setHours(hour), 'HH:30'),
+          halfHourAvailable,
+          fullHourAvailable,
+          fullHourFormatted: fullHour,
+          halfHourFormatted: halfHour,
         };
       });
   }, [availability]);
@@ -109,37 +108,15 @@ const Beard: React.FC = () => {
   const afternoonAvailability = useMemo(() => {
     return availability
       .filter(({ hour }) => hour >= 12)
-      .map(({ hour, available }) => {
+      .map(({ fullHour, halfHour, fullHourAvailable, halfHourAvailable }) => {
         return {
-          hour,
-          available,
-          fullHourFormatted: format(new Date().setHours(hour), 'HH:00'),
-          halfHourFormatted: format(new Date().setHours(hour), 'HH:30'),
+          halfHourAvailable,
+          fullHourAvailable,
+          fullHourFormatted: fullHour,
+          halfHourFormatted: halfHour,
         };
       });
   }, [availability]);
-
-  const handleCreateAppointment = useCallback(async () => {
-    try {
-      await api.post('appointments', {
-        provider_id: selectedProvider.toString(),
-        date: dateBeard,
-        type: selectedBeard,
-      });
-
-      addToast({
-        type: 'success',
-        title: 'Agendamento criado.',
-        description: 'Serviço de barba agendadado com sucesso!',
-      });
-    } catch (err) {
-      addToast({
-        type: 'error',
-        title: 'Erro na criação do agendamento',
-        description: 'Selecione o serviço/horário',
-      });
-    }
-  }, [addToast, dateBeard, selectedBeard, selectedProvider]);
 
   return (
     <Container>
@@ -154,92 +131,110 @@ const Beard: React.FC = () => {
             </TypeButton>
 
             <strong>Manhã</strong>
-            {morningAvailability.map(
-              ({ fullHourFormatted, halfHourFormatted, available }) => (
-                <ContentMorning>
-                  <HourButton
-                    style={{ marginLeft: 16 }}
-                    enabled={available}
-                    selectedBeard={selectedBeardHour === fullHourFormatted}
-                    available={available}
-                    key={fullHourFormatted}
-                    onClick={() =>
-                      handleSelectBeardHour(fullHourFormatted, available)
-                    }
-                  >
-                    <HourText
-                      selected={selectedBeardHour === fullHourFormatted}
-                    >
-                      {fullHourFormatted}{' '}
-                    </HourText>
-                  </HourButton>
+            {selectedBeard === 'Barba' &&
+              morningAvailability.map(
+                ({
+                  fullHourFormatted,
+                  halfHourFormatted,
+                  halfHourAvailable,
+                  fullHourAvailable,
+                }) => (
+                    <ContentMorning>
+                      <HourButton
+                        style={{ marginLeft: 16 }}
+                        enabled={fullHourAvailable}
+                        selectedBeard={selectedBeardHour === fullHourFormatted}
+                        available={fullHourAvailable}
+                        key={fullHourFormatted}
+                        onClick={() =>
+                          handleSelectBeardHour(
+                            fullHourFormatted,
+                            fullHourAvailable,
+                          )
+                        }
+                      >
+                        <HourText
+                          selected={selectedBeardHour === fullHourFormatted}
+                        >
+                          {fullHourFormatted}{' '}
+                        </HourText>
+                      </HourButton>
 
-                  <HourButton
-                    enabled={available}
-                    selectedBeard={selectedBeardHour === halfHourFormatted}
-                    available={available}
-                    key={halfHourFormatted}
-                    onClick={() =>
-                      handleSelectBeardHour(halfHourFormatted, available)
-                    }
-                  >
-                    <HourText
-                      selected={selectedBeardHour === halfHourFormatted}
-                    >
-                      {halfHourFormatted}{' '}
-                    </HourText>
-                  </HourButton>
-                </ContentMorning>
-              ),
-            )}
+                      <HourButton
+                        enabled={halfHourAvailable}
+                        selectedBeard={selectedBeardHour === halfHourFormatted}
+                        available={halfHourAvailable}
+                        key={halfHourFormatted}
+                        onClick={() =>
+                          handleSelectBeardHour(
+                            halfHourFormatted,
+                            halfHourAvailable,
+                          )
+                        }
+                      >
+                        <HourText
+                          selected={selectedBeardHour === halfHourFormatted}
+                        >
+                          {halfHourFormatted}{' '}
+                        </HourText>
+                      </HourButton>
+                    </ContentMorning>
+                  ),
+              )}
 
             <strong>Tarde</strong>
-            {afternoonAvailability.map(
-              ({ fullHourFormatted, halfHourFormatted, available }) => (
-                <ContentAfternoon>
-                  <HourButton
-                    style={{ marginLeft: 16 }}
-                    enabled={available}
-                    selectedBeard={selectedBeardHour === fullHourFormatted}
-                    available={available}
-                    key={fullHourFormatted}
-                    onClick={() =>
-                      handleSelectBeardHour(fullHourFormatted, available)
-                    }
-                  >
-                    <HourText
-                      selected={selectedBeardHour === fullHourFormatted}
-                    >
-                      {fullHourFormatted}{' '}
-                    </HourText>
-                  </HourButton>
+            {selectedBeard === 'Barba' &&
+              afternoonAvailability.map(
+                ({
+                  fullHourFormatted,
+                  halfHourFormatted,
+                  halfHourAvailable,
+                  fullHourAvailable,
+                }) => (
+                    <ContentAfternoon>
+                      <HourButton
+                        style={{ marginLeft: 16 }}
+                        enabled={fullHourAvailable}
+                        selectedBeard={selectedBeardHour === fullHourFormatted}
+                        available={fullHourAvailable}
+                        key={fullHourFormatted}
+                        onClick={() =>
+                          handleSelectBeardHour(
+                            fullHourFormatted,
+                            fullHourAvailable,
+                          )
+                        }
+                      >
+                        <HourText
+                          selected={selectedBeardHour === fullHourFormatted}
+                        >
+                          {fullHourFormatted}{' '}
+                        </HourText>
+                      </HourButton>
 
-                  <HourButton
-                    enabled={available}
-                    selectedBeard={selectedBeardHour === halfHourFormatted}
-                    available={available}
-                    key={halfHourFormatted}
-                    onClick={() =>
-                      handleSelectBeardHour(halfHourFormatted, available)
-                    }
-                  >
-                    <HourText
-                      selected={selectedBeardHour === halfHourFormatted}
-                    >
-                      {halfHourFormatted}{' '}
-                    </HourText>
-                  </HourButton>
-                </ContentAfternoon>
-              ),
-            )}
+                      <HourButton
+                        enabled={halfHourAvailable}
+                        selectedBeard={selectedBeardHour === halfHourFormatted}
+                        available={halfHourAvailable}
+                        key={halfHourFormatted}
+                        onClick={() =>
+                          handleSelectBeardHour(
+                            halfHourFormatted,
+                            halfHourAvailable,
+                          )
+                        }
+                      >
+                        <HourText
+                          selected={selectedBeardHour === halfHourFormatted}
+                        >
+                          {halfHourFormatted}{' '}
+                        </HourText>
+                      </HourButton>
+                    </ContentAfternoon>
+                  ),
+              )}
           </SectionBeard>
         </Section>
-        <CreateButton
-          style={{ marginTop: 50 }}
-          onClick={handleCreateAppointment}
-        >
-          Criar agendamento
-        </CreateButton>
       </ContentCreateAppointment>
     </Container>
   );

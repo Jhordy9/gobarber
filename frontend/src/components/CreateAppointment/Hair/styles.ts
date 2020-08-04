@@ -109,13 +109,3 @@ export const HourText = styled.text<DataProps>`
   font-weight: 400;
   font-size: 22px;
 `;
-
-export const CreateButton = styled(Button)`
-  font-size: 22px;
-  background: #6600ff;
-  color: #f4ede8;
-
-  &:hover {
-    background: ${shade(0.2, '#6600ff')};
-  }
-`;

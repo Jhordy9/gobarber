@@ -2,7 +2,10 @@ import { atom } from 'recoil';
 
 interface AvailabilityItem {
   hour: number;
-  available: boolean;
+  fullHour: any;
+  fullHourAvailable: boolean;
+  halfHour: any;
+  halfHourAvailable: boolean;
 }
 
 export const selectedProviderState = atom<string[]>({
@@ -28,4 +31,24 @@ export const selectedHairHourState = atom({
 export const selectedBeardHourState = atom({
   key: 'selectedBeardHourState',
   default: '50',
+});
+
+export const dateBeardState = atom({
+  key: 'dateBeardState',
+  default: new Date(),
+});
+
+export const dateHairState = atom({
+  key: 'dateHairState',
+  default: new Date(),
+});
+
+export const selectedBeardState = atom({
+  key: 'SelectedBeardState',
+  default: '',
+});
+
+export const selectedHairState = atom({
+  key: 'SelectedHairState',
+  default: '',
 });

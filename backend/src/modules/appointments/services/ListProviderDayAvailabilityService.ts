@@ -1,5 +1,5 @@
 import { injectable, inject } from 'tsyringe';
-import { getHours, isAfter } from 'date-fns';
+import { isAfter, format, formatISO9075 } from 'date-fns';
 
 import IAppontmentsRepository from '@modules/appointments/repositories/IAppointmentsRepository';
 
@@ -11,8 +11,11 @@ interface IRequest {
 }
 
 type IResponse = Array<{
+  fullHour: any;
+  halfHour: any;
   hour: number;
-  available: boolean;
+  fullHourAvailable: boolean;
+  halfHourAvailable: boolean;
 }>;
 
 @injectable()
@@ -49,15 +52,29 @@ class ListProviderDayAvailabilityService {
     const currentDate = new Date(Date.now());
 
     const availability = eachHourArray.map(hour => {
-      const hasAppointmentInHour = appointments.find(
-        appointment => getHours(appointment.date) === hour,
+      const compareFullHour = new Date(year, month - 1, day, hour);
+      const compareHalfHour = new Date(year, month - 1, day, hour, 30);
+
+      const hasAppointmentInFullHour = appointments.find(
+        appointment =>
+          formatISO9075(appointment.date.setSeconds(0)) ===
+          formatISO9075(compareFullHour.setSeconds(0)),
       );
 
-      const compareDate = new Date(year, month - 1, day, hour);
+      const hasAppointmentInHalfHour = appointments.find(
+        appointment =>
+          formatISO9075(appointment.date.setSeconds(0)) ===
+          formatISO9075(compareHalfHour.setSeconds(0)),
+      );
 
       return {
         hour,
-        available: !hasAppointmentInHour && isAfter(compareDate, currentDate),
+        fullHour: format(new Date().setHours(hour), 'HH:00'),
+        fullHourAvailable:
+          !hasAppointmentInFullHour && isAfter(compareFullHour, currentDate),
+        halfHour: format(new Date().setHours(hour), 'HH:30'),
+        halfHourAvailable:
+          !hasAppointmentInHalfHour && isAfter(compareHalfHour, currentDate),
       };
     });
 
