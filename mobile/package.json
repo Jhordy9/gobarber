@@ -19,7 +19,7 @@
     "@react-navigation/stack": "^5.2.19",
     "@unform/core": "^2.1.0",
     "@unform/mobile": "^2.1.0",
-    "axios": "^0.19.2",
+    "axios": "^0.21.1",
     "date-fns": "^2.14.0",
     "eslint-config-airbnb": "^18.1.0",
     "eslint-plugin-import": "^2.20.1",
